@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { toast } from 'sonner'
 import { Sidebar } from '@/components/sidebar'
 import { Cloud, Eye, EyeOff, Trash2, RefreshCw, Upload, Copy } from 'lucide-react'
+import { safeJson } from '@/lib/safe-fetch'
 
 interface Account {
   id: string
@@ -15,13 +16,20 @@ interface Account {
 
 export default function UnassignedPage() {
   const [accounts, setAccounts] = useState<Account[]>([])
+  const [isLoading, setIsLoading] = useState(true)
   const loadAccounts = useCallback(() => {
+    setIsLoading(true)
     fetch('/api/accounts/unassigned')
-      .then((r) => r.json())
-      .then(setAccounts)
-      .catch(() => setAccounts([]))
+      .then((r) => (r.ok ? safeJson<Account[]>(r, []) : []))
+      .then((data) => { setAccounts(Array.isArray(data) ? data : []); setIsLoading(false) })
+      .catch(() => { setAccounts([]); setIsLoading(false) })
   }, [])
   useEffect(() => { loadAccounts() }, [loadAccounts])
+  useEffect(() => {
+    const onFocus = () => loadAccounts()
+    window.addEventListener('focus', onFocus)
+    return () => window.removeEventListener('focus', onFocus)
+  }, [loadAccounts])
   const [showPasswords, setShowPasswords] = useState<Record<string, boolean>>({})
   const [showCookies, setShowCookies] = useState<Record<string, boolean>>({})
   const [uploadMode, setUploadMode] = useState<'file' | 'paste'>('file')
@@ -219,7 +227,24 @@ export default function UnassignedPage() {
             </div>
           </div>
 
+          {/* Loading skeleton */}
+          {isLoading && (
+            <div className="bg-slate-800/80 border border-slate-700/50 rounded-xl overflow-hidden mb-6 animate-pulse">
+              <div className="p-6 space-y-4">
+                {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+                  <div key={i} className="flex gap-4">
+                    <div className="h-5 w-5 bg-slate-700 rounded" />
+                    <div className="h-5 bg-slate-700 rounded flex-1 max-w-[120px]" />
+                    <div className="h-5 bg-slate-700 rounded flex-1 max-w-[180px]" />
+                    <div className="h-5 bg-slate-700 rounded flex-1" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Accounts Table */}
+          {!isLoading && (
           <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/50 rounded-xl overflow-hidden hover:border-slate-600/50 transition-all duration-300">
             <div className="overflow-x-auto">
               <table className="w-full">
@@ -304,9 +329,10 @@ export default function UnassignedPage() {
               </table>
             </div>
           </div>
+          )}
 
           {/* Pagination */}
-          {totalPages > 1 && (
+          {!isLoading && totalPages > 1 && (
             <div className="mt-6 flex items-center justify-between">
               <div></div>
               <div className="flex items-center gap-2">

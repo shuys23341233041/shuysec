@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getStore, getGlobal } from '@/lib/store'
 import { getSessionFromRequest, getSessionCookieName } from '@/lib/auth'
+import { hydrateUserStore, persistUserStore, persistGlobal } from '@/lib/kv-persistence'
 
 /** GET device by id with assigned accounts (real data) */
 export async function GET(
@@ -9,6 +10,7 @@ export async function GET(
 ) {
   const session = getSessionFromRequest(req.cookies.get(getSessionCookieName())?.value)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  await hydrateUserStore(session.user)
   try {
     const { id } = await params
     const store = getStore(session.user)
@@ -73,6 +75,8 @@ export async function DELETE(
     store.deviceKeyToId.delete(device.device_key)
     getGlobal().deviceKeyToUserAndDevice.delete(device.device_key)
     store.devices.delete(id)
+    await persistUserStore(session.user)
+    await persistGlobal()
     return NextResponse.json({ ok: true })
   } catch {
     return NextResponse.json({ error: 'Bad request' }, { status: 400 })

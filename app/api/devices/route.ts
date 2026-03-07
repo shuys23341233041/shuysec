@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getStore, getGlobal, type UserStore } from '@/lib/store'
 import { getSessionFromRequest, getSessionCookieName } from '@/lib/auth'
+import { hydrateUserStore, persistUserStore, persistGlobal } from '@/lib/kv-persistence'
 
 /** Device key 64 chars hex (32 bytes). Web Crypto works in Node 18+ and Edge. */
 function generateDeviceKey(): string {
@@ -12,6 +13,7 @@ function generateDeviceKey(): string {
 export async function GET(req: NextRequest) {
   const session = getSessionFromRequest(req.cookies.get(getSessionCookieName())?.value)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  await hydrateUserStore(session.user)
   const store = getStore(session.user)
   const list = Array.from(store.devices.values()).map((d) => ({
     id: d.id,
@@ -70,6 +72,8 @@ export async function POST(req: NextRequest) {
       global.deviceKeyToUserAndDevice.set(device_key, { userId: session.user, deviceId: id })
       created.push({ id, device_name, device_key })
     }
+    await persistUserStore(session.user)
+    await persistGlobal()
     return NextResponse.json({ devices: created })
   } catch (e) {
     console.error('[POST /api/devices]', e)

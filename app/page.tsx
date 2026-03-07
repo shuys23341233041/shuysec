@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { Sidebar } from '@/components/sidebar'
 import { WelcomeHeader } from '@/components/welcome-header'
 import { StatCard } from '@/components/stat-card'
@@ -8,22 +8,32 @@ import { ActivityChart } from '@/components/activity-chart'
 import { RunningGames } from '@/components/running-games'
 import { QuickActions } from '@/components/quick-actions'
 import { Announcements } from '@/components/announcements'
-import { Database, Users, CheckCircle, TrendingUp } from 'lucide-react'
+import { Database, Users, CheckCircle, TrendingUp, RefreshCw } from 'lucide-react'
+import { safeJson } from '@/lib/safe-fetch'
+
+const emptyStats = {
+  totalDevices: undefined as number | undefined,
+  totalAccounts: undefined as number | undefined,
+  runningAccounts: undefined as number | undefined,
+  uptimePercent: undefined as number | undefined,
+}
 
 export default function DashboardPage() {
-  const [stats, setStats] = useState<{
-    totalDevices?: number
-    totalAccounts?: number
-    runningAccounts?: number
-    uptimePercent?: number
-  }>({})
-
-  useEffect(() => {
+  const [stats, setStats] = useState(emptyStats)
+  const [isLoading, setIsLoading] = useState(true)
+  const loadStats = useCallback(() => {
+    setIsLoading(true)
     fetch('/api/stats')
-      .then((r) => r.json())
-      .then(setStats)
-      .catch(() => setStats({}))
+      .then((r) => (r.ok ? safeJson<typeof emptyStats>(r, emptyStats) : emptyStats))
+      .then((data) => { setStats(data ?? emptyStats); setIsLoading(false) })
+      .catch(() => { setStats(emptyStats); setIsLoading(false) })
   }, [])
+  useEffect(() => { loadStats() }, [loadStats])
+  useEffect(() => {
+    const onFocus = () => loadStats()
+    window.addEventListener('focus', onFocus)
+    return () => window.removeEventListener('focus', onFocus)
+  }, [loadStats])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950">
@@ -31,7 +41,18 @@ export default function DashboardPage() {
       
       <main className="ml-56 overflow-auto min-h-screen">
         <div className="p-8 max-w-7xl mx-auto">
-          <WelcomeHeader />
+          <div className="flex items-center justify-between mb-6">
+            <WelcomeHeader />
+            <button
+              type="button"
+              onClick={loadStats}
+              disabled={isLoading}
+              className="p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-gray-400 hover:text-cyan-400 hover:border-cyan-500/50 transition-all disabled:opacity-50"
+              title="Refresh stats"
+            >
+              <RefreshCw size={20} className={isLoading ? 'animate-spin' : ''} />
+            </button>
+          </div>
 
           {/* Stats Grid */}
           <div className="grid grid-cols-4 gap-4 mb-6">

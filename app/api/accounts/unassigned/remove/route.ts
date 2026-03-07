@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getStore } from '@/lib/store'
 import { getSessionFromRequest, getSessionCookieName } from '@/lib/auth'
+import { hydrateUserStore, persistUserStore } from '@/lib/kv-persistence'
 
 /** Remove accounts from unassigned. Body: { accountIds: string[] } */
 export async function POST(req: NextRequest) {
@@ -9,6 +10,7 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
     const accountIds = (body?.accountIds || []) as string[]
+    await hydrateUserStore(session.user)
     const store = getStore(session.user)
     let removed = 0
     for (const id of accountIds) {
@@ -19,6 +21,7 @@ export async function POST(req: NextRequest) {
         removed++
       }
     }
+    await persistUserStore(session.user)
     return NextResponse.json({ removed, total: store.unassignedIds.length })
   } catch {
     return NextResponse.json({ error: 'Bad request' }, { status: 400 })

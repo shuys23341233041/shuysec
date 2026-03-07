@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { toast } from 'sonner'
 import { Sidebar } from '@/components/sidebar'
-import { Cloud, Download, RotateCcw, Trash2, HardDrive, Plus } from 'lucide-react'
+import { Cloud, Download, RotateCcw, Trash2, HardDrive, Plus, RefreshCw } from 'lucide-react'
+import { safeJson } from '@/lib/safe-fetch'
 
 interface Backup {
   id: string
@@ -19,21 +20,10 @@ interface DeviceOption {
   name: string
 }
 
-const loadBackups = () =>
-  fetch('/api/backups')
-    .then((r) => r.json())
-    .then((list: { id: string; filename: string; format: string; fileSize: string; created: string; updated: string }[]) =>
-      (list || []).map((b) => ({
-        ...b,
-        created: b.created ? new Date(b.created).toLocaleDateString() : '',
-        updated: b.updated ? new Date(b.updated).toLocaleDateString() : '',
-      }))
-    )
-    .catch(() => [])
-
 export default function BackupsPage() {
   const [backups, setBackups] = useState<Backup[]>([])
   const [devices, setDevices] = useState<DeviceOption[]>([])
+  const [isLoading, setIsLoading] = useState(true)
   const [isDragActive, setIsDragActive] = useState(false)
   const [showForm, setShowForm] = useState(false)
   const [formFilename, setFormFilename] = useState('')
@@ -41,13 +31,25 @@ export default function BackupsPage() {
   const [formDownloadUrl, setFormDownloadUrl] = useState('')
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  useEffect(() => {
-    loadBackups().then(setBackups)
-    fetch('/api/devices')
-      .then((r) => r.json())
-      .then((list) => setDevices(list || []))
-      .catch(() => setDevices([]))
-  }, [])
+  const loadBackups = useCallback(() =>
+    fetch('/api/backups')
+      .then((r) => (r.ok ? safeJson<{ id: string; filename: string; format: string; fileSize: string; created: string; updated: string }[]>(r, []) : []))
+      .then((list) => (list || []).map((b) => ({
+        ...b,
+        created: b.created ? new Date(b.created).toLocaleDateString() : '',
+        updated: b.updated ? new Date(b.updated).toLocaleDateString() : '',
+      })))
+      .catch(() => []), [])
+
+  const refresh = useCallback(() => {
+    setIsLoading(true)
+    Promise.all([
+      loadBackups().then(setBackups),
+      fetch('/api/devices').then((r) => (r.ok ? safeJson<DeviceOption[]>(r, []) : [])).then((list) => setDevices(Array.isArray(list) ? list : [])).catch(() => setDevices([])),
+    ]).finally(() => setIsLoading(false))
+  }, [loadBackups])
+
+  useEffect(() => { refresh() }, [refresh])
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault()
@@ -67,7 +69,7 @@ export default function BackupsPage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ filename, format: 'LDPlayer', fileSize }),
     })
-      .then((r) => r.json())
+      .then((r) => r.ok ? r.json() : Promise.reject(new Error('Failed')))
       .then(() => {
         loadBackups().then(setBackups)
         toast.success('Backup added', { description: 'You can add a download link in the form below (edit backup later).' })
@@ -101,7 +103,7 @@ export default function BackupsPage() {
         downloadUrl: formDownloadUrl.trim() || undefined,
       }),
     })
-      .then((r) => r.json())
+      .then((r) => r.ok ? r.json() : Promise.reject(new Error('Failed')))
       .then(() => {
         loadBackups().then(setBackups)
         setFormFilename('')
@@ -146,9 +148,20 @@ export default function BackupsPage() {
       <main className="ml-56 overflow-auto min-h-screen">
         <div className="p-8 max-w-6xl mx-auto">
           {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-4xl font-bold text-white mb-2">Emulator Backups</h1>
-            <p className="text-gray-400">Manage and restore your emulator backups</p>
+          <div className="flex items-start justify-between mb-8">
+            <div>
+              <h1 className="text-4xl font-bold text-white mb-2">Emulator Backups</h1>
+              <p className="text-gray-400">Manage and restore your emulator backups</p>
+            </div>
+            <button
+              type="button"
+              onClick={refresh}
+              disabled={isLoading}
+              className="p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-gray-400 hover:text-cyan-400 hover:border-cyan-500/50 transition-all disabled:opacity-50"
+              title="Refresh"
+            >
+              <RefreshCw size={20} className={isLoading ? 'animate-spin' : ''} />
+            </button>
           </div>
 
           {/* Upload Area */}
@@ -262,7 +275,19 @@ export default function BackupsPage() {
               </span>
             </div>
 
-            {backups.length > 0 ? (
+            {isLoading ? (
+              <div className="space-y-3 animate-pulse">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="bg-slate-800/80 border border-slate-700/50 rounded-xl p-5 flex items-center gap-4">
+                    <div className="p-3 bg-slate-700 rounded-xl w-12 h-12" />
+                    <div className="flex-1">
+                      <div className="h-5 bg-slate-700 rounded w-1/3 mb-2" />
+                      <div className="h-4 bg-slate-700 rounded w-2/3" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : backups.length > 0 ? (
               <div className="space-y-3">
                 {backups.map((backup) => (
                   <div

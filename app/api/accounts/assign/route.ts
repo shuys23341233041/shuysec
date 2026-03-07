@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getStore } from '@/lib/store'
 import { getSessionFromRequest, getSessionCookieName } from '@/lib/auth'
+import { hydrateUserStore, persistUserStore } from '@/lib/kv-persistence'
 
 /** Assign accounts to device(s). Body: { deviceIds: string[], accountIds?: string[], countPerDevice?: number } */
 export async function POST(req: NextRequest) {
@@ -13,6 +14,7 @@ export async function POST(req: NextRequest) {
     const countPerDevice = typeof body?.countPerDevice === 'number' ? body.countPerDevice : body?.accounts_per_device
     const fillToTarget = body?.fillToTarget === true
     const targetAmount = Math.max(0, parseInt(body?.targetAmount || body?.target_amount, 10) || 0)
+    await hydrateUserStore(session.user)
     const store = getStore(session.user)
     if (!deviceIds.length) {
       return NextResponse.json({ error: 'deviceIds required' }, { status: 400 })
@@ -50,6 +52,7 @@ export async function POST(req: NextRequest) {
         assigned.push({ deviceId: did, accountIds: take })
       }
     }
+    await persistUserStore(session.user)
     return NextResponse.json({ assigned, remaining: toAssign.length })
   } catch {
     return NextResponse.json({ error: 'Bad request' }, { status: 400 })

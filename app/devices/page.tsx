@@ -1,11 +1,13 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { toast } from 'sonner'
 import { Sidebar } from '@/components/sidebar'
-import { Search, Plus, Grid3x3, List, Trash2 } from 'lucide-react'
+import { Search, Plus, Grid3x3, List, Trash2, RefreshCw } from 'lucide-react'
 import { DeviceActionMenu } from '@/components/device-action-menu'
 import Link from 'next/link'
+import { safeJson } from '@/lib/safe-fetch'
+import { useDebounce } from '@/hooks/use-debounce'
 
 interface Device {
   id: string
@@ -32,22 +34,28 @@ export default function DevicesPage() {
   const [addError, setAddError] = useState('')
   const [deviceToDelete, setDeviceToDelete] = useState<{ id: string; name: string } | null>(null)
   const [deleteLoading, setDeleteLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const debouncedSearch = useDebounce(searchQuery, 300)
 
-  const loadDevices = () => {
+  const loadDevices = useCallback(() => {
+    setIsLoading(true)
     fetch('/api/devices')
-      .then((r) => r.json())
-      .then(setDevices)
-      .catch(() => setDevices([]))
-  }
-
-  useEffect(() => {
-    loadDevices()
+      .then((r) => (r.ok ? safeJson<Device[]>(r, []) : []))
+      .then((data) => { setDevices(Array.isArray(data) ? data : []); setIsLoading(false) })
+      .catch(() => { setDevices([]); setIsLoading(false) })
   }, [])
+
+  useEffect(() => { loadDevices() }, [loadDevices])
+  useEffect(() => {
+    const onFocus = () => loadDevices()
+    window.addEventListener('focus', onFocus)
+    return () => window.removeEventListener('focus', onFocus)
+  }, [loadDevices])
 
   const filteredDevices = devices.filter(
     (device) =>
-      device.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      device.model.toLowerCase().includes(searchQuery.toLowerCase())
+      device.name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+      device.model.toLowerCase().includes(debouncedSearch.toLowerCase())
   )
 
   const totalPages = Math.ceil(filteredDevices.length / itemsPerPage)
@@ -234,7 +242,15 @@ export default function DevicesPage() {
                   className="w-full bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/50 rounded-xl pl-12 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500/50 transition-colors duration-300"
                 />
               </div>
-
+              <button
+                type="button"
+                onClick={loadDevices}
+                disabled={isLoading}
+                className="p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-gray-400 hover:text-cyan-400 hover:border-cyan-500/50 transition-all disabled:opacity-50"
+                title="Refresh"
+              >
+                <RefreshCw size={20} className={isLoading ? 'animate-spin' : ''} />
+              </button>
               <div className="flex items-center gap-2 bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/50 rounded-lg p-1">
                 <button
                   onClick={() => setViewMode('grid')}
@@ -251,8 +267,24 @@ export default function DevicesPage() {
               </div>
             </div>
 
+          {/* Loading skeleton */}
+          {isLoading && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <div key={i} className="bg-slate-800/80 border border-slate-700/50 rounded-xl p-6 animate-pulse">
+                  <div className="flex justify-between mb-4">
+                    <div className="h-5 bg-slate-700 rounded w-1/3" />
+                    <div className="h-8 w-8 bg-slate-700 rounded" />
+                  </div>
+                  <div className="h-4 bg-slate-700 rounded w-2/3 mb-4" />
+                  <div className="h-10 bg-slate-700 rounded w-full" />
+                </div>
+              ))}
+            </div>
+          )}
+
           {/* Grid View */}
-          {viewMode === 'grid' ? (
+          {!isLoading && viewMode === 'grid' ? (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                 {paginatedDevices.map((device) => (
@@ -292,7 +324,7 @@ export default function DevicesPage() {
                 ))}
               </div>
             </>
-          ) : (
+          ) : !isLoading ? (
             /* List View */
             <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/50 rounded-xl overflow-hidden mb-8">
               <div className="overflow-x-auto">
@@ -331,10 +363,10 @@ export default function DevicesPage() {
                 </table>
               </div>
             </div>
-          )}
+          ) : null}
 
           {/* Pagination */}
-          {totalPages > 1 && (
+          {!isLoading && totalPages > 1 && (
             <div className="flex items-center justify-between">
               <p className="text-sm text-gray-400">
                 Showing {startIdx + 1}-{Math.min(startIdx + itemsPerPage, filteredDevices.length)} of {filteredDevices.length} devices

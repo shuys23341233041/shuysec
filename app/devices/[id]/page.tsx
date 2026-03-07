@@ -1,10 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { toast } from 'sonner'
 import { useRouter, useParams } from 'next/navigation'
 import { Sidebar } from '@/components/sidebar'
-import { ArrowLeft, Upload, Eye, EyeOff, Copy, Key, Edit2, Power, AlertCircle, CheckCircle2, MoreVertical } from 'lucide-react'
+import { ArrowLeft, Upload, Eye, EyeOff, Copy, Key, Edit2, Power, AlertCircle, CheckCircle2, MoreVertical, RefreshCw } from 'lucide-react'
+import { safeJson } from '@/lib/safe-fetch'
 
 interface DeviceData {
   id: string
@@ -27,18 +28,23 @@ export default function DeviceDetailPage() {
   const deviceId = params.id as string
 
   const [device, setDevice] = useState<DeviceData | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('overview')
   const [isDragging, setIsDragging] = useState(false)
   const [openMenuId, setOpenMenuId] = useState<string | null>(null)
   const [showPasswords, setShowPasswords] = useState<Record<string, boolean>>({})
   const [showCookies, setShowCookies] = useState<Record<string, boolean>>({})
 
-  useEffect(() => {
+  const loadDevice = useCallback(() => {
+    if (!deviceId) return
+    setIsLoading(true)
     fetch(`/api/devices/${deviceId}`)
-      .then((r) => (r.ok ? r.json() : Promise.reject()))
-      .then(setDevice)
-      .catch(() => setDevice(null))
+      .then((r) => (r.ok ? safeJson<DeviceData | null>(r, null) : Promise.resolve(null)))
+      .then((d) => { setDevice(d ?? null); setIsLoading(false) })
+      .catch(() => { setDevice(null); setIsLoading(false) })
   }, [deviceId])
+
+  useEffect(() => { loadDevice() }, [loadDevice])
 
   const accounts = device?.accounts ?? []
   const connected = device?.status === 'connected'
@@ -64,12 +70,28 @@ export default function DeviceDetailPage() {
     }
   }
 
-  if (device === null) {
+  if (isLoading || device === null) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950">
         <Sidebar />
-        <main className="ml-56 overflow-auto min-h-screen flex items-center justify-center">
-          <p className="text-gray-400">Device not found or loading...</p>
+        <main className="ml-56 overflow-auto min-h-screen flex flex-col items-center justify-center gap-4">
+          {isLoading ? (
+            <>
+              <RefreshCw size={32} className="text-cyan-500 animate-spin" />
+              <p className="text-gray-400">Loading device...</p>
+            </>
+          ) : (
+            <>
+              <p className="text-gray-400">Device not found</p>
+              <button
+                type="button"
+                onClick={() => router.push('/devices')}
+                className="px-4 py-2 rounded-lg bg-slate-700 text-gray-300 hover:bg-slate-600 transition-colors"
+              >
+                Back to devices
+              </button>
+            </>
+          )}
         </main>
       </div>
     )
@@ -114,6 +136,9 @@ export default function DeviceDetailPage() {
               </div>
 
               <div className="flex items-center gap-2">
+                <button type="button" onClick={loadDevice} className="p-2.5 bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/50 rounded-lg hover:border-slate-600/50 transition-all text-gray-400 hover:text-cyan-300" title="Refresh">
+                  <RefreshCw size={20} />
+                </button>
                 <button className="p-2.5 bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/50 rounded-lg hover:border-slate-600/50 transition-all text-gray-400 hover:text-cyan-300" title="View">
                   <Eye size={20} />
                 </button>

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getStore } from '@/lib/store'
 import { getSessionFromRequest, getSessionCookieName } from '@/lib/auth'
+import { hydrateUserStore, persistUserStore } from '@/lib/kv-persistence'
 
 /** Set pending restore for a device. Body: { deviceId: string, backupId: string, downloadUrl?: string } */
 export async function POST(req: NextRequest) {
@@ -11,6 +12,7 @@ export async function POST(req: NextRequest) {
     const deviceId = (body?.deviceId || body?.device_id || '').toString().trim()
     const backupId = (body?.backupId || body?.backup_id || '').toString().trim()
     const downloadUrl = (body?.downloadUrl || body?.download_url || '').toString().trim()
+    await hydrateUserStore(session.user)
     const store = getStore(session.user)
     const device = store.devices.get(deviceId)
     if (!device) {
@@ -25,6 +27,7 @@ export async function POST(req: NextRequest) {
       name,
       filename: name,
     })
+    await persistUserStore(session.user)
     return NextResponse.json({ ok: true, device_key: device.device_key })
   } catch {
     return NextResponse.json({ error: 'Bad request' }, { status: 400 })

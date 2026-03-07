@@ -60,6 +60,11 @@ Chỉ deploy **folder Template/OC** (app Next.js). Tool Click.py chạy trên m�
 9. **Environment variables (recommended):** In the Vercel project → **Settings** → **Environment Variables**, add:
    - **AUTH_SECRET**: any secret string (used to sign session cookies). Use a strong value in production.
 
+10. **Optional — persistent data (Redis/KV):** By default, data (devices, accounts, backups) is stored in memory and can be lost on serverless cold starts or reloads. To persist data across requests and restarts, add a **Redis** store (e.g. [Upstash Redis](https://upstash.com) or Vercel KV) and set:
+   - **KV_REST_API_URL**: your Redis REST API URL
+   - **KV_REST_API_TOKEN**: your Redis REST API token  
+   The app will then load/save user data and the device-key map to Redis automatically.
+
 ---
 
 ## Step 4: Test on Vercel
@@ -71,7 +76,7 @@ Chỉ deploy **folder Template/OC** (app Next.js). Tool Click.py chạy trên m�
    - **Unassigned** → Add some accounts (paste or file).
    - **Mass Configure** → Select devices, distribute accounts.
    - **Backups** → Add a backup manually (name + link if needed).
-4. Data is stored in memory: it may be lost on reload or after some time (normal for testing).
+4. Without KV: data is in memory and may be lost on reload. With KV env vars set, data is persisted to Redis.
 
 ---
 
