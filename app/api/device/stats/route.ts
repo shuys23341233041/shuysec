@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getStore, getGlobal } from '@/lib/store'
-import { hydrateGlobal, hydrateUserStore, persistUserStore, requireDatabaseResponse } from '@/lib/persistence'
+import { getGlobal } from '@/lib/store'
+import { hydrateGlobal, updateDeviceStats, requireDatabaseResponse } from '@/lib/persistence'
 
+/** Tool only updates device stats. No full store read/write — avoids any risk of wiping DB. */
 export async function POST(req: NextRequest) {
   const dbErr = requireDatabaseResponse()
   if (dbErr) return dbErr
@@ -12,22 +13,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'device_key required' }, { status: 400 })
     }
     await hydrateGlobal()
-    const global = getGlobal()
-    const entry = global.deviceKeyToUserAndDevice.get(device_key)
+    const entry = getGlobal().deviceKeyToUserAndDevice.get(device_key)
     if (!entry) return NextResponse.json({ error: 'Invalid key' }, { status: 403 })
-    await hydrateUserStore(entry.userId)
-    const store = getStore(entry.userId)
-    const device = store.devices.get(entry.deviceId)
-    if (device) {
-      device.lastHeartbeat = Date.now()
-      device.stats = {
-        cpu: body.cpu,
-        ram_mb: body.ram_mb,
-        uptime_seconds: body.uptime_seconds,
-        screenshot_base64: body.screenshot_base64,
-      }
-    }
-    await persistUserStore(entry.userId)
+    await updateDeviceStats(entry.userId, entry.deviceId, {
+      cpu: body.cpu,
+      ram_mb: body.ram_mb,
+      uptime_seconds: body.uptime_seconds,
+      screenshot_base64: body.screenshot_base64,
+    })
     return NextResponse.json({ ok: true })
   } catch {
     return NextResponse.json({ error: 'Bad request' }, { status: 400 })

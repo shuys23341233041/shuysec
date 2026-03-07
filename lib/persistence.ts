@@ -46,6 +46,22 @@ export async function persistGlobal(): Promise<void> {
   throw new Error('DATABASE_URL is required')
 }
 
+/** Update only device heartbeat (Tool). Does not read/write full store — safe, no data wipe. */
+export async function updateDeviceHeartbeat(userId: string, deviceId: string): Promise<void> {
+  if (useSql()) return sql.updateDeviceHeartbeat(userId, deviceId)
+  throw new Error('DATABASE_URL is required')
+}
+
+/** Update only device stats (Tool). Does not read/write full store — safe, no data wipe. */
+export async function updateDeviceStats(
+  userId: string,
+  deviceId: string,
+  stats: { cpu?: number; ram_mb?: number; uptime_seconds?: number; screenshot_base64?: string }
+): Promise<void> {
+  if (useSql()) return sql.updateDeviceStats(userId, deviceId, stats)
+  throw new Error('DATABASE_URL is required')
+}
+
 export function isPersistenceEnabled(): boolean {
   return useSql()
 }

@@ -73,6 +73,8 @@ export async function DELETE(
       return NextResponse.json({ error: 'Device not found' }, { status: 404 })
     }
     for (const accId of device.accountIds) {
+      const acc = store.accounts.get(accId)
+      if (acc) acc.deviceId = undefined
       if (!store.unassignedIds.includes(accId)) {
         store.unassignedIds.push(accId)
       }

@@ -52,6 +52,8 @@ export async function POST(req: NextRequest) {
         if (take.length === 0) continue
         take.forEach((accId) => {
           device.accountIds.push(accId)
+          const acc = store.accounts.get(accId)
+          if (acc) acc.deviceId = did
           const idx = store.unassignedIds.indexOf(accId)
           if (idx !== -1) store.unassignedIds.splice(idx, 1)
         })
@@ -66,6 +68,8 @@ export async function POST(req: NextRequest) {
         if (take.length === 0) continue
         take.forEach((accId) => {
           device.accountIds.push(accId)
+          const acc = store.accounts.get(accId)
+          if (acc) acc.deviceId = did
           const idx = store.unassignedIds.indexOf(accId)
           if (idx !== -1) store.unassignedIds.splice(idx, 1)
         })

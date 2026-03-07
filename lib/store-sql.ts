@@ -137,6 +137,29 @@ export async function hydrateUserStore(userId: string): Promise<void> {
   }
 }
 
+/** Update only device last_heartbeat (for Tool heartbeat). Does not touch accounts or other data. */
+export async function updateDeviceHeartbeat(userId: string, deviceId: string): Promise<void> {
+  await ensureSchema()
+  await query(
+    'UPDATE devices SET last_heartbeat = ? WHERE id = ? AND user_id = ?',
+    [Date.now(), deviceId, userId]
+  )
+}
+
+/** Update only device stats (for Tool stats). Does not touch accounts or other data. */
+export async function updateDeviceStats(
+  userId: string,
+  deviceId: string,
+  stats: { cpu?: number; ram_mb?: number; uptime_seconds?: number; screenshot_base64?: string }
+): Promise<void> {
+  await ensureSchema()
+  const statsJson = stats ? JSON.stringify(stats) : null
+  await query(
+    'UPDATE devices SET last_heartbeat = ?, stats = ? WHERE id = ? AND user_id = ?',
+    [Date.now(), statsJson, deviceId, userId]
+  )
+}
+
 /** Save in-memory user store to MySQL. */
 export async function persistUserStore(userId: string): Promise<void> {
   const store = getStore(userId)
