@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getStore } from '@/lib/store'
 import { getSessionFromRequest, getSessionCookieName, isAdmin, getAllUsers } from '@/lib/auth'
 import { addAccountsFromLines } from '@/lib/accountParse'
-import { hydrateUserStore, persistUserStore } from '@/lib/kv-persistence'
+import { hydrateUserStore, persistUserStore } from '@/lib/persistence'
 
 /** POST add accounts to a user's unassigned pool (admin only). Body: { paste: string } or { lines: string[] } */
 export async function POST(

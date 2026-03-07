@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getStore } from '@/lib/store'
 import { getSessionFromRequest, getSessionCookieName } from '@/lib/auth'
-import { hydrateUserStore, persistUserStore } from '@/lib/kv-persistence'
+import { hydrateUserStore, persistUserStore } from '@/lib/persistence'
 
 /** Set pending restore for a device. Body: { deviceId: string, backupId: string, downloadUrl?: string } */
 export async function POST(req: NextRequest) {

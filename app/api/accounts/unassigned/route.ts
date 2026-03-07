@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getStore } from '@/lib/store'
 import { getSessionFromRequest, getSessionCookieName } from '@/lib/auth'
 import { addAccountsFromLines } from '@/lib/accountParse'
-import { hydrateUserStore, persistUserStore } from '@/lib/kv-persistence'
+import { hydrateUserStore, persistUserStore } from '@/lib/persistence'
 
 export async function GET(req: NextRequest) {
   const session = getSessionFromRequest(req.cookies.get(getSessionCookieName())?.value)

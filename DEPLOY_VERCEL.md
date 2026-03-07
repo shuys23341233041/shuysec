@@ -60,10 +60,15 @@ Chỉ deploy **folder Template/OC** (app Next.js). Tool Click.py chạy trên m�
 9. **Environment variables (recommended):** In the Vercel project → **Settings** → **Environment Variables**, add:
    - **AUTH_SECRET**: any secret string (used to sign session cookies). Use a strong value in production.
 
-10. **Optional — persistent data (Redis/KV):** By default, data (devices, accounts, backups) is stored in memory and can be lost on serverless cold starts or reloads. To persist data across requests and restarts, add a **Redis** store (e.g. [Upstash Redis](https://upstash.com) or Vercel KV) and set:
-   - **KV_REST_API_URL**: your Redis REST API URL
-   - **KV_REST_API_TOKEN**: your Redis REST API token  
-   The app will then load/save user data and the device-key map to Redis automatically.
+10. **Optional — persistent data (recommended for production):** By default, data is in memory and can be lost on reload (e.g. “lúc 1 device lúc 2 devices”). To fix this, use **one** of:
+    - **MySQL (e.g. Vietnix):** Create a MySQL database on your host (Vietnix, cPanel, or any provider).
+      1. In cPanel: **Remote Database Access** → Add Access Host (e.g. `%` for testing).
+      2. **MySQL Databases** → create database + user, assign user to DB.
+      3. **phpMyAdmin** (or Import trong cPanel) → chọn database → **Import** → chọn file `Template/OC/scripts/init-database.sql`. File này tạo bảng + dữ liệu mẫu (1 device, 1 account, 1 backup cho user `sHuys`). Nếu muốn DB trống, chỉ chạy phần "1. TABLES" trong file SQL, bỏ qua phần "2. SAMPLE DATA".
+      4. Vercel → **Settings** → **Environment Variables** → **DATABASE_URL**: `mysql://USER:PASSWORD@HOST:3306/DATABASE` (ví dụ Vietnix: `mysql://user:pass@host120.vietnix.vn:3306/your_db`).
+      App cũng tự tạo bảng khi chạy lần đầu nếu bạn chưa import SQL.
+    - **Redis (KV):** Set **KV_REST_API_URL** and **KV_REST_API_TOKEN** (e.g. Upstash) to use Redis instead.
+    - If both **DATABASE_URL** and KV are set, **DATABASE_URL** (MySQL) is used first.
 
 ---
 
@@ -76,7 +81,7 @@ Chỉ deploy **folder Template/OC** (app Next.js). Tool Click.py chạy trên m�
    - **Unassigned** → Add some accounts (paste or file).
    - **Mass Configure** → Select devices, distribute accounts.
    - **Backups** → Add a backup manually (name + link if needed).
-4. Without KV: data is in memory and may be lost on reload. With KV env vars set, data is persisted to Redis.
+4. Without DB/KV: data is in memory and may be lost on reload (số device/account có thể thay đổi khi F5). Set **DATABASE_URL** (MySQL) or **KV_*** (Redis) to persist data.
 
 ---
 
@@ -108,7 +113,7 @@ Chỉ deploy **folder Template/OC** (app Next.js). Tool Click.py chạy trên m�
 
 ## Notes
 
-- **Data**: In-memory store, no database. Data may be lost when Vercel restarts the instance (fine for testing).
+- **Data**: If you do not set **DATABASE_URL** or KV, data is in memory and may be lost when Vercel restarts (lúc load ra 1 device, lúc 2 devices). Dùng MySQL (Vietnix) hoặc Redis để lưu lâu dài.
 - **Custom domain**: In Vercel project → Settings → Domains you can add your own domain.
 - **Logs**: Vercel → project → Deployments → select a deployment → **Functions** / **Logs** to debug build or API errors.
 

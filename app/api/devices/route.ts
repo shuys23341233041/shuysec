@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getStore, getGlobal, type UserStore } from '@/lib/store'
 import { getSessionFromRequest, getSessionCookieName } from '@/lib/auth'
-import { hydrateUserStore, persistUserStore, persistGlobal } from '@/lib/kv-persistence'
+import { hydrateUserStore, persistUserStore, persistGlobal } from '@/lib/persistence'
 
 /** Device key 64 chars hex (32 bytes). Web Crypto works in Node 18+ and Edge. */
 function generateDeviceKey(): string {

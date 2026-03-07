@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getStore, getGlobal } from '@/lib/store'
 import { getSessionFromRequest, getSessionCookieName } from '@/lib/auth'
-import { hydrateUserStore, persistUserStore, persistGlobal } from '@/lib/kv-persistence'
+import { hydrateUserStore, persistUserStore, persistGlobal } from '@/lib/persistence'
 
 /** GET device by id with assigned accounts (real data) */
 export async function GET(

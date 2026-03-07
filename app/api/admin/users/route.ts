@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getStore } from '@/lib/store'
 import { getSessionFromRequest, getSessionCookieName, isAdmin, getAllUsers } from '@/lib/auth'
-import { hydrateUserStore } from '@/lib/kv-persistence'
+import { hydrateUserStore } from '@/lib/persistence'
 
 /** GET list of all users with stats (admin only). */
 export async function GET(req: NextRequest) {

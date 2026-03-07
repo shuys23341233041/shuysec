@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getStore, getGlobal } from '@/lib/store'
-import { hydrateGlobal, hydrateUserStore, persistUserStore } from '@/lib/kv-persistence'
+import { hydrateGlobal, hydrateUserStore, persistUserStore } from '@/lib/persistence'
 
 export async function POST(req: NextRequest) {
   try {

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getStore } from '@/lib/store'
 import { getSessionFromRequest, getSessionCookieName } from '@/lib/auth'
-import { hydrateUserStore, persistUserStore } from '@/lib/kv-persistence'
+import { hydrateUserStore, persistUserStore } from '@/lib/persistence'
 
 /** Assign accounts to device(s). Body: { deviceIds: string[], accountIds?: string[], countPerDevice?: number } */
 export async function POST(req: NextRequest) {
