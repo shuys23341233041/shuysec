@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getStore, getGlobal } from '@/lib/store'
-import { hydrateGlobal, hydrateUserStore } from '@/lib/persistence'
+import { hydrateGlobal, hydrateUserStore, requireDatabaseResponse } from '@/lib/persistence'
 
 export async function GET(req: NextRequest) {
+  const dbErr = requireDatabaseResponse()
+  if (dbErr) return dbErr
   try {
     const device_key = req.nextUrl.searchParams.get('device_key') || ''
     if (!device_key.trim()) {

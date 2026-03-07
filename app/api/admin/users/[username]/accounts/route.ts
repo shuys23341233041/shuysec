@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getStore } from '@/lib/store'
 import { getSessionFromRequest, getSessionCookieName, isAdmin, getAllUsers } from '@/lib/auth'
 import { addAccountsFromLines } from '@/lib/accountParse'
-import { hydrateUserStore, persistUserStore } from '@/lib/persistence'
+import { hydrateUserStore, persistUserStore, requireDatabaseResponse } from '@/lib/persistence'
 
 /** POST add accounts to a user's unassigned pool (admin only). Body: { paste: string } or { lines: string[] } */
 export async function POST(
@@ -12,6 +12,8 @@ export async function POST(
   const session = getSessionFromRequest(req.cookies.get(getSessionCookieName())?.value)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   if (!isAdmin(session)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  const dbErr = requireDatabaseResponse()
+  if (dbErr) return dbErr
   try {
     const { username } = await params
     const allowed = getAllUsers().map((u) => u.username)

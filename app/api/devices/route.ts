@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getStore, getGlobal, type UserStore } from '@/lib/store'
 import { getSessionFromRequest, getSessionCookieName } from '@/lib/auth'
-import { hydrateUserStore, persistUserStore, persistGlobal } from '@/lib/persistence'
+import { hydrateUserStore, persistUserStore, persistGlobal, requireDatabaseResponse } from '@/lib/persistence'
 
 /** Device key 64 chars hex (32 bytes). Web Crypto works in Node 18+ and Edge. */
 function generateDeviceKey(): string {
@@ -13,6 +13,8 @@ function generateDeviceKey(): string {
 export async function GET(req: NextRequest) {
   const session = getSessionFromRequest(req.cookies.get(getSessionCookieName())?.value)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const dbErr = requireDatabaseResponse()
+  if (dbErr) return dbErr
   await hydrateUserStore(session.user)
   const store = getStore(session.user)
   const list = Array.from(store.devices.values()).map((d) => ({
@@ -45,6 +47,8 @@ function getNextDeviceNumber(store: UserStore): number {
 export async function POST(req: NextRequest) {
   const session = getSessionFromRequest(req.cookies.get(getSessionCookieName())?.value)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const dbErr = requireDatabaseResponse()
+  if (dbErr) return dbErr
   let body: { count?: number } = {}
   try {
     const text = await req.text()

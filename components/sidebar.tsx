@@ -21,12 +21,22 @@ export function Sidebar() {
   const router = useRouter()
   const [loggingOut, setLoggingOut] = useState(false)
   const [isAdmin, setIsAdmin] = useState(false)
+  const [dbRequired, setDbRequired] = useState<boolean | null>(null)
 
   useEffect(() => {
     fetch('/api/auth/session')
       .then((r) => r.json())
       .then((data) => setIsAdmin(data?.role === 'admin'))
       .catch(() => setIsAdmin(false))
+  }, [])
+
+  useEffect(() => {
+    fetch('/api/db-status')
+      .then((r) => r.json())
+      .then((data: { ok?: boolean; database?: string }) => {
+        setDbRequired(data?.ok !== true || data?.database === 'not_configured')
+      })
+      .catch(() => setDbRequired(true))
   }, [])
 
   const handleLogout = async () => {
@@ -38,6 +48,20 @@ export function Sidebar() {
     } finally {
       setLoggingOut(false)
     }
+  }
+
+  if (dbRequired === true) {
+    return (
+      <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/95 p-6">
+        <div className="max-w-md rounded-xl border border-amber-500/40 bg-slate-900 p-8 text-center">
+          <h2 className="text-xl font-bold text-amber-400 mb-2">Database connection required</h2>
+          <p className="text-gray-400 text-sm mb-4">
+            This app runs only with MySQL. Set <strong className="text-gray-300">DATABASE_URL</strong> in Vercel Environment Variables (e.g. <code className="text-cyan-400 text-xs">mysql://user:pass@host:3306/dbname</code>).
+          </p>
+          <p className="text-gray-500 text-xs">See scripts/VIETNIX-DATABASE.md for setup.</p>
+        </div>
+      </div>
+    )
   }
 
   return (

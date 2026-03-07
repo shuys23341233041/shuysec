@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getStore, getGlobal } from '@/lib/store'
-import { hydrateGlobal, hydrateUserStore, persistUserStore } from '@/lib/persistence'
+import { hydrateGlobal, hydrateUserStore, persistUserStore, requireDatabaseResponse } from '@/lib/persistence'
 
 export async function POST(req: NextRequest) {
+  const dbErr = requireDatabaseResponse()
+  if (dbErr) return dbErr
   try {
     const body = await req.json()
     const device_key = (body?.device_key || '').toString().trim()

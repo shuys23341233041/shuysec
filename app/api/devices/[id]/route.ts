@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getStore, getGlobal } from '@/lib/store'
 import { getSessionFromRequest, getSessionCookieName } from '@/lib/auth'
-import { hydrateUserStore, persistUserStore, persistGlobal } from '@/lib/persistence'
+import { hydrateUserStore, persistUserStore, persistGlobal, requireDatabaseResponse } from '@/lib/persistence'
 
 /** GET device by id with assigned accounts (real data) */
 export async function GET(
@@ -10,6 +10,8 @@ export async function GET(
 ) {
   const session = getSessionFromRequest(req.cookies.get(getSessionCookieName())?.value)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const dbErr = requireDatabaseResponse()
+  if (dbErr) return dbErr
   await hydrateUserStore(session.user)
   try {
     const { id } = await params
@@ -60,8 +62,11 @@ export async function DELETE(
 ) {
   const session = getSessionFromRequest(req.cookies.get(getSessionCookieName())?.value)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const dbErr = requireDatabaseResponse()
+  if (dbErr) return dbErr
   try {
     const { id } = await params
+    await hydrateUserStore(session.user)
     const store = getStore(session.user)
     const device = store.devices.get(id)
     if (!device) {

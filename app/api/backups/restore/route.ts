@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getStore } from '@/lib/store'
 import { getSessionFromRequest, getSessionCookieName } from '@/lib/auth'
-import { hydrateUserStore, persistUserStore } from '@/lib/persistence'
+import { hydrateUserStore, persistUserStore, requireDatabaseResponse } from '@/lib/persistence'
 
 /** Set pending restore for a device. Body: { deviceId: string, backupId: string, downloadUrl?: string } */
 export async function POST(req: NextRequest) {
   const session = getSessionFromRequest(req.cookies.get(getSessionCookieName())?.value)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const dbErr = requireDatabaseResponse()
+  if (dbErr) return dbErr
   try {
     const body = await req.json()
     const deviceId = (body?.deviceId || body?.device_id || '').toString().trim()

@@ -1,13 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getStore } from '@/lib/store'
 import { getSessionFromRequest, getSessionCookieName, isAdmin, getAllUsers } from '@/lib/auth'
-import { hydrateUserStore } from '@/lib/persistence'
+import { hydrateUserStore, requireDatabaseResponse } from '@/lib/persistence'
 
 /** GET list of all users with stats (admin only). */
 export async function GET(req: NextRequest) {
   const session = getSessionFromRequest(req.cookies.get(getSessionCookieName())?.value)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   if (!isAdmin(session)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  const dbErr = requireDatabaseResponse()
+  if (dbErr) return dbErr
   const users = getAllUsers()
   const list = await Promise.all(users.map(async (u) => {
     await hydrateUserStore(u.username)

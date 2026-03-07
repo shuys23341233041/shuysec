@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getStore } from '@/lib/store'
 import { getSessionFromRequest, getSessionCookieName } from '@/lib/auth'
-import { hydrateUserStore, persistUserStore } from '@/lib/persistence'
+import { hydrateUserStore, persistUserStore, requireDatabaseResponse } from '@/lib/persistence'
 
 export async function DELETE(
   req: NextRequest,
@@ -9,6 +9,8 @@ export async function DELETE(
 ) {
   const session = getSessionFromRequest(req.cookies.get(getSessionCookieName())?.value)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const dbErr = requireDatabaseResponse()
+  if (dbErr) return dbErr
   try {
     const { id } = await params
     await hydrateUserStore(session.user)

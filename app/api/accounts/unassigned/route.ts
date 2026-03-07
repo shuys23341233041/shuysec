@@ -2,11 +2,13 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getStore } from '@/lib/store'
 import { getSessionFromRequest, getSessionCookieName } from '@/lib/auth'
 import { addAccountsFromLines } from '@/lib/accountParse'
-import { hydrateUserStore, persistUserStore } from '@/lib/persistence'
+import { hydrateUserStore, persistUserStore, requireDatabaseResponse } from '@/lib/persistence'
 
 export async function GET(req: NextRequest) {
   const session = getSessionFromRequest(req.cookies.get(getSessionCookieName())?.value)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const dbErr = requireDatabaseResponse()
+  if (dbErr) return dbErr
   await hydrateUserStore(session.user)
   const store = getStore(session.user)
   const list = store.unassignedIds
@@ -26,6 +28,8 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const session = getSessionFromRequest(req.cookies.get(getSessionCookieName())?.value)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const dbErr = requireDatabaseResponse()
+  if (dbErr) return dbErr
   try {
     const body = await req.json()
     await hydrateUserStore(session.user)

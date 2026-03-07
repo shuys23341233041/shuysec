@@ -32,7 +32,7 @@ export default function MassConfigurePage() {
     })
 
   const refreshData = useCallback(() => {
-    Promise.all([
+    return Promise.all([
       fetch('/api/devices').then((r) => (r.ok ? safeJson(r, []) : [])),
       fetch('/api/accounts/unassigned').then((r) => (r.ok ? safeJson(r, []) : [])),
     ])
@@ -94,9 +94,11 @@ export default function MassConfigurePage() {
   const hasEnoughAccounts = totalAccountsToDistribute <= unassignedAccounts
   const accountsRemaining = unassignedAccounts - totalAccountsToDistribute
 
+  const [distributing, setDistributing] = useState(false)
+
   const handleDistribute = async () => {
     if (!hasEnoughAccounts || selectedDeviceIds.length === 0) return
-    setLoading(true)
+    setDistributing(true)
     try {
       const res = await fetch('/api/accounts/assign', {
         method: 'POST',
@@ -108,17 +110,22 @@ export default function MassConfigurePage() {
           countPerDevice: fillToTarget ? undefined : distributionAmount,
         }),
       })
-      const data = await res.json()
-      if (res.ok && data.assigned) {
-        refreshData()
-        toast.success('Distribution complete', { description: `Assigned to ${data.assigned?.length ?? 0} device(s). Tool Click.py will sync accounts to cookie.txt.` })
-      } else {
+      const data = (await res.json()) as { assigned?: { deviceId: string; accountIds: string[] }[]; totalAssigned?: number; error?: string }
+      if (!res.ok) {
         toast.error(data.error || 'Distribution failed')
+        return
+      }
+      const totalAssigned = data.totalAssigned ?? (data.assigned?.reduce((s, a) => s + (a.accountIds?.length ?? 0), 0) ?? 0)
+      await refreshData()
+      if (totalAssigned > 0) {
+        toast.success('Distribution complete', { description: `Assigned ${totalAssigned} account(s) to ${data.assigned?.length ?? 0} device(s). Tool Click.py will sync to cookie.txt.` })
+      } else {
+        toast.warning('Nothing assigned', { description: 'No unassigned accounts or devices already at target. Add accounts in Unassigned first.' })
       }
     } catch {
       toast.error('Request failed')
     } finally {
-      setLoading(false)
+      setDistributing(false)
     }
   }
 
@@ -141,11 +148,23 @@ export default function MassConfigurePage() {
               className="p-2.5 rounded-lg bg-slate-800/50 border border-slate-700/50 text-gray-400 hover:text-cyan-400 hover:border-cyan-500/50 transition-all duration-300 disabled:opacity-50"
               title="Refresh"
             >
-              <RefreshCw size={20} />
+              <RefreshCw size={20} className={loading ? 'animate-spin' : ''} />
             </button>
           </div>
 
+          {/* Loading skeleton */}
+          {loading && allDevices.length === 0 && (
+            <div className="space-y-6 animate-pulse">
+              <div className="h-32 bg-slate-800/80 border border-slate-700/50 rounded-xl" />
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div className="h-64 bg-slate-800/80 border border-slate-700/50 rounded-xl" />
+                <div className="h-64 bg-slate-800/80 border border-slate-700/50 rounded-xl" />
+              </div>
+            </div>
+          )}
+
           {/* Account Distribution Section */}
+          {(!loading || allDevices.length > 0) && (
           <div className="space-y-8">
             {/* Distribution Overview */}
             <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/50 rounded-xl p-6 hover:border-slate-600/50 transition-all duration-300">
@@ -391,14 +410,14 @@ export default function MassConfigurePage() {
                 {/* Distribute Button */}
                 <button
                   onClick={handleDistribute}
-                  disabled={loading || !hasEnoughAccounts || selectedDevices.length === 0}
+                  disabled={loading || distributing || !hasEnoughAccounts || selectedDevices.length === 0}
                   className={`w-full py-3 px-4 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center gap-2 ${
                     hasEnoughAccounts && selectedDevices.length > 0
                       ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white hover:from-cyan-500 hover:to-blue-500 shadow-lg shadow-cyan-500/30 hover:shadow-cyan-500/50 hover:-translate-y-0.5 active:scale-95'
                       : 'bg-slate-700/50 text-gray-400 cursor-not-allowed opacity-50'
                   }`}
                 >
-                  Distribute Accounts
+                  {distributing ? 'Distributing…' : 'Distribute Accounts'}
                 </button>
               </div>
             </div>
@@ -445,6 +464,7 @@ export default function MassConfigurePage() {
               </div>
             )}
           </div>
+          )}
         </div>
       </main>
     </div>

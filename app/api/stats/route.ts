@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getStore } from '@/lib/store'
 import { getSessionFromRequest, getSessionCookieName } from '@/lib/auth'
-import { hydrateUserStore } from '@/lib/persistence'
+import { hydrateUserStore, requireDatabaseResponse } from '@/lib/persistence'
 
 export async function GET(req: NextRequest) {
   const session = getSessionFromRequest(req.cookies.get(getSessionCookieName())?.value)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const dbErr = requireDatabaseResponse()
+  if (dbErr) return dbErr
   await hydrateUserStore(session.user)
   const store = getStore(session.user)
   const devices = Array.from(store.devices.values())
