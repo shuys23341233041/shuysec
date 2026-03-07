@@ -218,3 +218,29 @@ export async function persistGlobal(): Promise<void> {
     await query('INSERT INTO device_key_map (device_key, user_id, device_id) VALUES (?, ?, ?)', [key, val.userId, val.deviceId])
   }
 }
+
+/** Save backup file binary to backup_files (call after backup meta is in store and persisted). */
+export async function saveBackupFile(userId: string, backupId: string, fileData: Buffer): Promise<void> {
+  await ensureSchema()
+  await query(
+    'INSERT INTO backup_files (backup_id, user_id, file_data) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE file_data = VALUES(file_data), user_id = VALUES(user_id)',
+    [backupId, userId, fileData]
+  )
+}
+
+/** Load backup file binary for download. Returns null if not found. */
+export async function getBackupFile(userId: string, backupId: string): Promise<Buffer | null> {
+  await ensureSchema()
+  const rows = await query<{ file_data: Buffer }[]>(
+    'SELECT file_data FROM backup_files WHERE backup_id = ? AND user_id = ?',
+    [backupId, userId]
+  )
+  const row = Array.isArray(rows) ? rows[0] : null
+  return row?.file_data ?? null
+}
+
+/** Delete backup file from backup_files (call when deleting a backup). */
+export async function deleteBackupFile(userId: string, backupId: string): Promise<void> {
+  await ensureSchema()
+  await query('DELETE FROM backup_files WHERE backup_id = ? AND user_id = ?', [backupId, userId])
+}

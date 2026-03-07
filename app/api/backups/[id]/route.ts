@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getStore } from '@/lib/store'
 import { getSessionFromRequest, getSessionCookieName } from '@/lib/auth'
 import { hydrateUserStore, persistUserStore, requireDatabaseResponse } from '@/lib/persistence'
+import { deleteBackupFile } from '@/lib/store-sql'
 
 export async function DELETE(
   req: NextRequest,
@@ -19,6 +20,7 @@ export async function DELETE(
     if (idx === -1) return NextResponse.json({ error: 'Not found' }, { status: 404 })
     store.backups.splice(idx, 1)
     await persistUserStore(session.user)
+    await deleteBackupFile(session.user, id)
     return NextResponse.json({ ok: true })
   } catch {
     return NextResponse.json({ error: 'Bad request' }, { status: 400 })

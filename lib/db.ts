@@ -65,6 +65,13 @@ export async function initSchema(): Promise<void> {
     )
   `)
   await q(`
+    CREATE TABLE IF NOT EXISTS backup_files (
+      backup_id VARCHAR(255) PRIMARY KEY,
+      user_id VARCHAR(255) NOT NULL,
+      file_data LONGBLOB NOT NULL
+    )
+  `)
+  await q(`
     CREATE TABLE IF NOT EXISTS pending_restores (
       device_key VARCHAR(64) PRIMARY KEY,
       user_id VARCHAR(255) NOT NULL,

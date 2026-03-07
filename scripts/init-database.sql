@@ -36,6 +36,12 @@ CREATE TABLE IF NOT EXISTS backups (
   download_url TEXT NULL
 );
 
+CREATE TABLE IF NOT EXISTS backup_files (
+  backup_id VARCHAR(255) PRIMARY KEY,
+  user_id VARCHAR(255) NOT NULL,
+  file_data LONGBLOB NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS pending_restores (
   device_key VARCHAR(64) PRIMARY KEY,
   user_id VARCHAR(255) NOT NULL,

@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { toast } from 'sonner'
 import { Sidebar } from '@/components/sidebar'
-import { Cloud, Download, RotateCcw, Trash2, HardDrive, Plus, RefreshCw } from 'lucide-react'
+import { Cloud, Download, RotateCcw, Trash2, HardDrive, RefreshCw } from 'lucide-react'
 import { safeJson } from '@/lib/safe-fetch'
 
 interface Backup {
@@ -25,10 +25,8 @@ export default function BackupsPage() {
   const [devices, setDevices] = useState<DeviceOption[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isDragActive, setIsDragActive] = useState(false)
-  const [showForm, setShowForm] = useState(false)
-  const [formFilename, setFormFilename] = useState('')
-  const [formFormat, setFormFormat] = useState<'LDPlayer' | 'MuMu Player'>('LDPlayer')
-  const [formDownloadUrl, setFormDownloadUrl] = useState('')
+  const [uploadProgress, setUploadProgress] = useState<number | null>(null)
+  const [uploadingName, setUploadingName] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const loadBackups = useCallback(() =>
@@ -62,19 +60,39 @@ export default function BackupsPage() {
   }
 
   const addBackupFromFile = (file: File) => {
-    const fileSize = file.size ? `${(file.size / 1024 / 1024).toFixed(2)} MB` : '0 MB'
-    const filename = file.name || `backup_${Date.now()}.ldbk`
-    fetch('/api/backups', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ filename, format: 'LDPlayer', fileSize }),
+    setUploadingName(file.name)
+    setUploadProgress(0)
+    const formData = new FormData()
+    formData.append('file', file)
+
+    const xhr = new XMLHttpRequest()
+    xhr.upload.addEventListener('progress', (e) => {
+      if (e.lengthComputable) {
+        setUploadProgress(Math.round((e.loaded / e.total) * 100))
+      }
     })
-      .then((r) => r.ok ? r.json() : Promise.reject(new Error('Failed')))
-      .then(() => {
+    xhr.addEventListener('load', () => {
+      setUploadProgress(null)
+      setUploadingName(null)
+      if (xhr.status >= 200 && xhr.status < 300) {
         loadBackups().then(setBackups)
-        toast.success('Backup added', { description: 'You can add a download link in the form below (edit backup later).' })
-      })
-      .catch(() => toast.error('Failed to add backup'))
+        toast.success('Backup uploaded', { description: file.name })
+      } else {
+        try {
+          const err = JSON.parse(xhr.responseText)
+          toast.error(err.error || 'Upload failed')
+        } catch {
+          toast.error('Upload failed')
+        }
+      }
+    })
+    xhr.addEventListener('error', () => {
+      setUploadProgress(null)
+      setUploadingName(null)
+      toast.error('Upload failed')
+    })
+    xhr.open('POST', '/api/backups/upload')
+    xhr.send(formData)
   }
 
   const handleDrop = (e: React.DragEvent) => {
@@ -89,28 +107,6 @@ export default function BackupsPage() {
     const file = e.target.files?.[0]
     if (file) addBackupFromFile(file)
     e.target.value = ''
-  }
-
-  const submitAddBackupForm = () => {
-    const filename = formFilename.trim() || `backup_${Date.now()}.ldbk`
-    fetch('/api/backups', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        filename,
-        format: formFormat,
-        fileSize: '0 MB',
-        downloadUrl: formDownloadUrl.trim() || undefined,
-      }),
-    })
-      .then((r) => r.ok ? r.json() : Promise.reject(new Error('Failed')))
-      .then(() => {
-        loadBackups().then(setBackups)
-        setFormFilename('')
-        setFormDownloadUrl('')
-        setShowForm(false)
-      })
-      .catch(() => toast.error('Failed to add backup'))
   }
 
   const deleteBackup = (id: string) => {
@@ -176,93 +172,56 @@ export default function BackupsPage() {
             <div
               role="button"
               tabIndex={0}
-              onKeyDown={(e) => e.key === 'Enter' && fileInputRef.current?.click()}
-              onClick={() => fileInputRef.current?.click()}
-              onDragEnter={handleDrag}
+              onKeyDown={(e) => e.key === 'Enter' && !uploadProgress && fileInputRef.current?.click()}
+              onClick={() => !uploadProgress && fileInputRef.current?.click()}
+              onDragEnter={uploadProgress ? undefined : handleDrag}
               onDragLeave={handleDrag}
-              onDragOver={handleDrag}
-              onDrop={handleDrop}
-              className={`bg-gradient-to-br from-slate-800 to-slate-900 border-2 border-dashed rounded-2xl p-12 transition-all duration-300 cursor-pointer ${
+              onDragOver={uploadProgress ? undefined : handleDrag}
+              onDrop={uploadProgress ? undefined : handleDrop}
+              className={`bg-gradient-to-br from-slate-800 to-slate-900 border-2 border-dashed rounded-2xl p-12 transition-all duration-300 ${uploadProgress != null ? 'cursor-wait border-cyan-500/70' : 'cursor-pointer'} ${
                 isDragActive
                   ? 'border-cyan-500 bg-cyan-600/10 shadow-lg shadow-cyan-500/20'
                   : 'border-slate-700/50 hover:border-slate-600/50 hover:shadow-lg hover:shadow-slate-900/50'
               }`}
             >
               <div className="flex flex-col items-center justify-center">
-                <div className={`p-4 rounded-2xl mb-4 transition-all duration-300 ${isDragActive ? 'bg-cyan-600/30' : 'bg-slate-700/50'}`}>
-                  <Cloud size={48} className={isDragActive ? 'text-cyan-400' : 'text-cyan-500'} />
-                </div>
-                <h3 className="text-2xl font-semibold text-white mb-2">Add backup</h3>
-                <p className="text-gray-400 mb-6">Drag and drop a file or click to select • Registers file (name + size) for restore later</p>
-                <span className="inline-block bg-gradient-to-r from-cyan-600 to-blue-600 text-white px-8 py-3 rounded-lg font-semibold shadow-lg shadow-cyan-500/30">Select file</span>
-                <div className="flex gap-3 mt-8">
-                  <span className="inline-flex items-center gap-2 px-4 py-2 bg-slate-700/50 border border-slate-600/50 rounded-lg text-sm font-medium text-gray-300">
-                    <span className="w-2 h-2 bg-yellow-500 rounded-full" />
-                    MuMu Player
-                  </span>
-                  <span className="inline-flex items-center gap-2 px-4 py-2 bg-slate-700/50 border border-slate-600/50 rounded-lg text-sm font-medium text-gray-300">
-                    <span className="w-2 h-2 bg-amber-500 rounded-full" />
-                    LDPlayer
-                  </span>
-                </div>
+                {uploadProgress != null ? (
+                  <>
+                    <div className="p-4 rounded-2xl mb-4 bg-cyan-600/30">
+                      <Cloud size={48} className="text-cyan-400 animate-pulse" />
+                    </div>
+                    <h3 className="text-2xl font-semibold text-white mb-2">Uploading…</h3>
+                    {uploadingName && <p className="text-gray-400 mb-4 truncate max-w-md">{uploadingName}</p>}
+                    <div className="w-full max-w-xs h-3 bg-slate-700 rounded-full overflow-hidden mb-2">
+                      <div
+                        className="h-full bg-gradient-to-r from-cyan-500 to-blue-500 transition-all duration-300"
+                        style={{ width: `${uploadProgress}%` }}
+                      />
+                    </div>
+                    <span className="text-cyan-400 font-bold text-xl">{uploadProgress}%</span>
+                  </>
+                ) : (
+                  <>
+                    <div className={`p-4 rounded-2xl mb-4 transition-all duration-300 ${isDragActive ? 'bg-cyan-600/30' : 'bg-slate-700/50'}`}>
+                      <Cloud size={48} className={isDragActive ? 'text-cyan-400' : 'text-cyan-500'} />
+                    </div>
+                    <h3 className="text-2xl font-semibold text-white mb-2">Add backup</h3>
+                    <p className="text-gray-400 mb-6">Drag and drop a file or click to select • File is uploaded to the server for restore</p>
+                    <span className="inline-block bg-gradient-to-r from-cyan-600 to-blue-600 text-white px-8 py-3 rounded-lg font-semibold shadow-lg shadow-cyan-500/30">Select file</span>
+                    <div className="flex gap-3 mt-8">
+                      <span className="inline-flex items-center gap-2 px-4 py-2 bg-slate-700/50 border border-slate-600/50 rounded-lg text-sm font-medium text-gray-300">
+                        <span className="w-2 h-2 bg-yellow-500 rounded-full" />
+                        MuMu Player
+                      </span>
+                      <span className="inline-flex items-center gap-2 px-4 py-2 bg-slate-700/50 border border-slate-600/50 rounded-lg text-sm font-medium text-gray-300">
+                        <span className="w-2 h-2 bg-amber-500 rounded-full" />
+                        LDPlayer
+                      </span>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
-          </div>
-
-          {/* Form: Add backup manually (name + download link) */}
-          <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/50 rounded-xl p-6 mb-8 hover:border-slate-600/50 transition-all duration-300">
-            <button
-              type="button"
-              onClick={() => setShowForm((v) => !v)}
-              className="flex items-center gap-2 text-cyan-400 hover:text-cyan-300 font-semibold mb-4"
-            >
-              <Plus size={20} />
-              {showForm ? 'Hide form' : 'Add backup manually (name + download link)'}
-            </button>
-            {showForm && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-2">Filename</label>
-                  <input
-                    type="text"
-                    value={formFilename}
-                    onChange={(e) => setFormFilename(e.target.value)}
-                    placeholder="e.g. backup_2026.ldbk"
-                    className="w-full bg-slate-900/50 border border-slate-600/50 rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500/50"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-2">Format</label>
-                  <select
-                    value={formFormat}
-                    onChange={(e) => setFormFormat(e.target.value as 'LDPlayer' | 'MuMu Player')}
-                    className="w-full bg-slate-900/50 border border-slate-600/50 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-cyan-500/50"
-                  >
-                    <option value="LDPlayer">LDPlayer</option>
-                    <option value="MuMu Player">MuMu Player</option>
-                  </select>
-                </div>
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-400 mb-2">Download link (optional, used when restoring)</label>
-                  <input
-                    type="url"
-                    value={formDownloadUrl}
-                    onChange={(e) => setFormDownloadUrl(e.target.value)}
-                    placeholder="https://..."
-                    className="w-full bg-slate-900/50 border border-slate-600/50 rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500/50"
-                  />
-                </div>
-                <div>
-                  <button
-                    type="button"
-                    onClick={submitAddBackupForm}
-                    className="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white px-6 py-2.5 rounded-lg font-semibold transition-all duration-300"
-                  >
-                    Add backup
-                  </button>
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Backups Section */}
@@ -321,9 +280,14 @@ export default function BackupsPage() {
 
                     {/* Actions */}
                     <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <button className="p-2.5 text-gray-400 hover:text-blue-400 hover:bg-blue-500/20 rounded-lg transition-all duration-300 hover:scale-110 active:scale-95" title="Download">
+                      <a
+                        href={`/api/backups/${backup.id}/download`}
+                        download={backup.filename}
+                        className="p-2.5 text-gray-400 hover:text-blue-400 hover:bg-blue-500/20 rounded-lg transition-all duration-300 hover:scale-110 active:scale-95 inline-flex"
+                        title="Download"
+                      >
                         <Download size={18} />
-                      </button>
+                      </a>
                       {devices.length > 0 && (
                         <select
                           className="bg-slate-800 text-gray-300 text-xs rounded-lg px-2 py-1.5 border border-slate-600"

@@ -22,7 +22,11 @@ export async function POST(req: NextRequest) {
     }
     const backup = store.backups.find((b) => b.id === backupId)
     const name = backup?.filename || `backup_${backupId}.ldbk`
-    const url = downloadUrl || backup?.downloadUrl || `https://example.com/backups/${name}`
+    const base = process.env.NEXT_PUBLIC_APP_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : '')
+    const url =
+      downloadUrl ||
+      backup?.downloadUrl ||
+      (base ? `${base}/api/backups/${backupId}/download?device_key=${encodeURIComponent(device.device_key)}` : '')
     store.pendingRestores.set(device.device_key, {
       device_key: device.device_key,
       download_url: url,
