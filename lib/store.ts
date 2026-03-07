@@ -98,39 +98,6 @@ export function getStore(userId: string): UserStore {
       pendingRestores: new Map(),
     }
     global.userStores.set(userId, userStore)
-    // Seed demo data only for first user (admin) if empty
-    if (global.userStores.size === 1 && userId === 'sHuys') {
-      const devKey = '00fa7d92a672a0471900a490d115725d3782dcb7eb32c15ebd8497bb54c45326'
-      const devId = 'device_1'
-      userStore.devices.set(devId, {
-        id: devId,
-        device_key: devKey,
-        device_name: 'Device 1',
-        lastHeartbeat: Date.now(),
-        accountIds: [],
-      })
-      userStore.deviceKeyToId.set(devKey, devId)
-      global.deviceKeyToUserAndDevice.set(devKey, { userId, deviceId: devId })
-      for (let i = 1; i <= 5; i++) {
-        const id = `acc_${i}`
-        userStore.accounts.set(id, {
-          id,
-          username: `User${String(i).padStart(3, '0')}`,
-          password: 'demo123',
-          cookie: 'sid=demo' + i,
-          privateServerLink: i % 2 === 0 ? 'https://example.com' : undefined,
-        })
-        userStore.unassignedIds.push(id)
-      }
-      userStore.backups.push({
-        id: '1',
-        filename: 'Demo_Backup_2026.ldbk',
-        format: 'LDPlayer',
-        fileSize: '256 MB',
-        created: new Date().toISOString(),
-        updated: new Date().toISOString(),
-      })
-    }
   }
   return userStore
 }

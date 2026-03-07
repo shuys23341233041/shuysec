@@ -35,10 +35,10 @@ Chỉ deploy **folder Template/OC** (app Next.js). Tool Click.py chạy trên m�
    git add .
    git commit -m "Initial: sHuysSec + Tool Click.py"
    git branch -M main
-   git remote add origin https://github.com/<username>/<repo>.git
+   git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO.git
    git push -u origin main
    ```
-   Replace `<username>` and `<repo>` with your GitHub username and repo name.
+   **Thay YOUR_USERNAME** = tên GitHub của bạn, **YOUR_REPO** = tên repo. Ví dụ: user `lenguyenkhachuy`, repo `OneClick-sHuysSec` thì gõ: `https://github.com/lenguyenkhachuy/OneClick-sHuysSec.git`. Không để nguyên chữ YOUR_USERNAME hay dấu ngoặc nhọn trong URL — shell sẽ báo lỗi.
 
 ---
 
