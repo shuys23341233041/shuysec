@@ -66,6 +66,7 @@ export default function BackupsPage() {
     formData.append('file', file)
 
     const xhr = new XMLHttpRequest()
+    xhr.withCredentials = true
     xhr.upload.addEventListener('progress', (e) => {
       if (e.lengthComputable) {
         setUploadProgress(Math.round((e.loaded / e.total) * 100))
@@ -78,18 +79,21 @@ export default function BackupsPage() {
         loadBackups().then(setBackups)
         toast.success('Backup uploaded', { description: file.name })
       } else {
+        let msg = 'Upload failed'
         try {
           const err = JSON.parse(xhr.responseText)
-          toast.error(err.error || 'Upload failed')
+          if (err && typeof err.error === 'string') msg = err.error
         } catch {
-          toast.error('Upload failed')
+          if (xhr.status === 413) msg = 'File too large (server limit). Try a smaller file or check Vercel/host limits.'
+          else if (xhr.responseText) msg = `Upload failed: ${xhr.responseText.slice(0, 80)}`
         }
+        toast.error(msg)
       }
     })
     xhr.addEventListener('error', () => {
       setUploadProgress(null)
       setUploadingName(null)
-      toast.error('Upload failed')
+      toast.error('Upload failed (network error)')
     })
     xhr.open('POST', '/api/backups/upload')
     xhr.send(formData)

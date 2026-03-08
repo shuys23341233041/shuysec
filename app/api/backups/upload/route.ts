@@ -44,7 +44,11 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ id, filename, format, fileSize })
   } catch (e) {
+    const message = e instanceof Error ? e.message : 'Upload failed'
     console.error('Backup upload error', e)
-    return NextResponse.json({ error: 'Upload failed' }, { status: 400 })
+    return NextResponse.json(
+      { error: message.includes('backup_files') ? 'Database missing backup_files table. Run migration or init-database.sql.' : message },
+      { status: 500 }
+    )
   }
 }

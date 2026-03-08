@@ -80,8 +80,8 @@ Chỉ deploy **folder Template/OC** (app Next.js). Tool Click.py chạy trên m�
    - **Devices** → Add Device → copy **device_key**.
    - **Unassigned** → Add some accounts (paste or file).
    - **Mass Configure** → Select devices, distribute accounts.
-   - **Backups** → Add a backup manually (name + link if needed).
-4. Without DB/KV: data is in memory and may be lost on reload (số device/account có thể thay đổi khi F5). Set **DATABASE_URL** (MySQL) or **KV_*** (Redis) to persist data.
+   - **Backups** → Upload a backup file (drag & drop or Select file).
+4. Without DB/KV: data is in memory and may be lost on reload (số device/account có thể thay đổi khi F5). Set **DATABASE_URL** (MySQL) to persist data.
 
 ---
 
@@ -118,6 +118,8 @@ Chỉ deploy **folder Template/OC** (app Next.js). Tool Click.py chạy trên m�
 - **Logs**: Vercel → project → Deployments → select a deployment → **Functions** / **Logs** to debug build or API errors.
 
 If the build fails, use the error message (or screenshot) to fix the issue.
+
+**Backup upload fails:** If you see "Database missing backup_files table", run the full `scripts/init-database.sql` on your MySQL (it creates the `backup_files` table). If you see "File too large" or 413, Vercel serverless has a ~4.5MB request body limit; use a smaller backup or host large files elsewhere.
 
 ---
 
