@@ -4,9 +4,9 @@ import { Activity } from 'lucide-react'
 
 export function RunningGames() {
   return (
-    <div className="rounded-xl border border-[#333333] bg-[#28323D] p-6">
+    <div className="rounded-xl border border-[#333333] p-6 shadow-lg" style={{ background: 'var(--fs-gradient-card)' }}>
       <div className="flex items-center gap-2 mb-4">
-        <div className="w-8 h-8 rounded-lg bg-[#22C55E] flex items-center justify-center text-white">
+        <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white shadow-md" style={{ background: 'var(--fs-gradient-success)' }}>
           <Activity size={18} />
         </div>
         <div>

@@ -20,7 +20,7 @@ interface WelcomeHeaderProps {
 
 export function WelcomeHeader({ onRefresh, isLoading }: WelcomeHeaderProps) {
   return (
-    <div className="flex items-center justify-between rounded-xl bg-[#078DEE] px-6 py-5 shadow-lg">
+    <div className="flex items-center justify-between rounded-xl px-6 py-5 shadow-lg shadow-[#078DEE]/20" style={{ background: 'var(--fs-gradient-welcome)' }}>
       <div>
         <h1 className="text-2xl font-bold text-[#FFFFFF]">Welcome to sHuysSec</h1>
         <p className="text-[#68CDF9] text-sm mt-0.5">{formatWelcomeDate()}</p>

@@ -39,7 +39,7 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-[#141A21]">
       <Sidebar />
-      <main className="ml-56 min-h-screen flex flex-col bg-[#1C252E]">
+      <main className="ml-56 min-h-screen flex flex-col" style={{ background: 'var(--fs-gradient-content)' }}>
         <TopBar />
         <div className="flex-1 p-6 max-w-7xl mx-auto w-full">
           <div className="mb-6">
@@ -52,28 +52,28 @@ export default function DashboardPage() {
               icon={<Database size={24} />}
               value={String(stats.totalDevices ?? '—')}
               label="Total Devices"
-              iconBg="bg-[#078DEE]"
+              iconBg="bg-gradient-to-br from-[#078DEE] to-[#00B8D9]"
               iconColor="text-white"
             />
             <StatCard
               icon={<Users size={24} />}
               value={String(stats.totalAccounts ?? '—')}
               label="Total Accounts"
-              iconBg="bg-[#22C55E]"
+              iconBg="bg-gradient-to-br from-[#22C55E] to-[#16a34a]"
               iconColor="text-white"
             />
             <StatCard
               icon={<CheckCircle size={24} />}
               value={String(stats.runningAccounts ?? '—')}
               label="Running Accounts"
-              iconBg="bg-[#00B8D9]"
+              iconBg="bg-gradient-to-br from-[#00B8D9] to-[#078DEE]"
               iconColor="text-white"
             />
             <StatCard
               icon={<TrendingUp size={24} />}
               value={stats.uptimePercent != null ? `${stats.uptimePercent}%` : '—'}
               label="Uptime"
-              iconBg="bg-[#FFAB00]"
+              iconBg="bg-gradient-to-br from-[#FFAB00] to-[#ff8f00]"
               iconColor="text-white"
             />
           </div>

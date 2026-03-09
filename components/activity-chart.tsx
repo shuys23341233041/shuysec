@@ -21,10 +21,10 @@ const data = [
 
 export function ActivityChart() {
   return (
-    <div className="rounded-xl border border-[#333333] bg-[#28323D] p-6">
+    <div className="rounded-xl border border-[#333333] p-6 shadow-lg" style={{ background: 'var(--fs-gradient-card)' }}>
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-[#078DEE] flex items-center justify-center text-white">
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white shadow-md" style={{ background: 'var(--fs-gradient-primary)' }}>
             <TrendingUp size={18} />
           </div>
           <div>

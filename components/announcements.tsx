@@ -6,9 +6,9 @@ export function Announcements() {
   return (
     <div className="grid grid-cols-2 gap-4">
       {/* Announcements */}
-      <div className="rounded-xl border border-[#333333] bg-[#28323D] p-6">
+      <div className="rounded-xl border border-[#333333] p-6 shadow-lg" style={{ background: 'var(--fs-gradient-card)' }}>
         <div className="flex items-center gap-2 mb-4">
-          <div className="w-8 h-8 rounded-lg bg-[#FF5630] flex items-center justify-center text-white">
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white shadow-md" style={{ background: 'var(--fs-gradient-danger)' }}>
             <AlertCircle size={18} />
           </div>
           <h3 className="text-[#FFFFFF] font-semibold">Announcements</h3>
@@ -44,9 +44,9 @@ export function Announcements() {
       </div>
 
       {/* Recent Updates */}
-      <div className="rounded-xl border border-[#333333] bg-[#28323D] p-6">
+      <div className="rounded-xl border border-[#333333] p-6 shadow-lg" style={{ background: 'var(--fs-gradient-card)' }}>
         <div className="flex items-center gap-2 mb-4">
-          <div className="w-8 h-8 rounded-lg bg-[#078DEE] flex items-center justify-center text-white">
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white shadow-md" style={{ background: 'var(--fs-gradient-primary)' }}>
             <Bell size={18} />
           </div>
           <h3 className="text-[#FFFFFF] font-semibold">Recent Updates</h3>

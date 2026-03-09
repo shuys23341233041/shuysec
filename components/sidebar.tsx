@@ -26,9 +26,10 @@ const SidebarLink = ({
       href={href}
       className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
         isActive
-          ? 'bg-[#078DEE] text-white'
+          ? 'text-white shadow-md'
           : 'text-[#919EAB] hover:text-white hover:bg-[#28323D]'
       }`}
+      style={isActive ? { background: 'var(--fs-gradient-primary)' } : undefined}
     >
       <Icon size={20} className="shrink-0" />
       <span>{label}</span>
@@ -90,11 +91,11 @@ export function Sidebar() {
   }
 
   return (
-    <aside className="fixed left-0 top-0 w-56 h-screen z-50 flex flex-col bg-[#141A21] border-r border-[#28323D]">
+    <aside className="fixed left-0 top-0 w-56 h-screen z-50 flex flex-col border-r border-[#28323D]" style={{ background: 'var(--fs-gradient-sidebar)' }}>
       {/* Logo */}
       <div className="p-4 border-b border-[#28323D]">
         <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-lg bg-[#078DEE] flex items-center justify-center">
+          <div className="w-9 h-9 rounded-lg flex items-center justify-center shadow-lg" style={{ background: 'var(--fs-gradient-primary)' }}>
             <span className="text-white text-sm font-bold">sH</span>
           </div>
           <span className="text-[#FFFFFF] font-semibold tracking-tight">sHuysSec</span>

@@ -23,6 +23,16 @@
   --fs-dark: #1E1E1E;
   --fs-gray: #333333;
   --fs-border: rgba(255, 255, 255, 0.08);
+  /* Gradients (FarmSync-style) */
+  --fs-gradient-sidebar: linear-gradient(180deg, #141A21 0%, #1a2332 100%);
+  --fs-gradient-content: linear-gradient(180deg, #1C252E 0%, #161d28 100%);
+  --fs-gradient-card: linear-gradient(145deg, #28323D 0%, #1f2832 100%);
+  --fs-gradient-primary: linear-gradient(135deg, #078DEE 0%, #00B8D9 100%);
+  --fs-gradient-primary-hover: linear-gradient(135deg, #68CDF9 0%, #078DEE 100%);
+  --fs-gradient-welcome: linear-gradient(120deg, #078DEE 0%, #0568c7 50%, #00B8D9 100%);
+  --fs-gradient-success: linear-gradient(135deg, #22C55E 0%, #16a34a 100%);
+  --fs-gradient-danger: linear-gradient(135deg, #FF5630 0%, #de350b 100%);
+  --fs-gradient-warning: linear-gradient(135deg, #FFAB00 0%, #ff8f00 100%);
 }
 
 :root {

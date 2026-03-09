@@ -66,7 +66,7 @@ export default function DevicesPage() {
     <div className="min-h-screen bg-[#141A21]">
       <Sidebar />
 
-      <main className="ml-56 overflow-auto min-h-screen bg-[#1C252E]">
+      <main className="ml-56 overflow-auto min-h-screen" style={{ background: 'var(--fs-gradient-content)' }}>
         <div className="p-8 max-w-7xl mx-auto">
           {/* Header */}
           <div className="mb-8">
@@ -81,7 +81,8 @@ export default function DevicesPage() {
                   setAddError('')
                   setShowAddModal(true)
                 }}
-                className="bg-[#078DEE] hover:bg-[#68CDF9] text-white px-6 py-3 rounded-lg flex items-center gap-2 transition-colors font-semibold border border-[#078DEE]"
+                className="text-white px-6 py-3 rounded-lg flex items-center gap-2 transition-all font-semibold border border-[#078DEE]/50 hover:shadow-lg hover:shadow-[#078DEE]/25"
+                style={{ background: 'var(--fs-gradient-primary)' }}
               >
                 <Plus size={20} />
                 Add Device
@@ -92,7 +93,7 @@ export default function DevicesPage() {
             {showAddModal && (
               <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#000000]/60" onClick={() => !addLoading && setShowAddModal(false)}>
                 <div
-                  className="bg-[#28323D] border border-[#333333] rounded-xl shadow-xl max-w-md w-full p-6"
+                  className="border border-[#333333] rounded-xl shadow-xl max-w-md w-full p-6" style={{ background: 'var(--fs-gradient-card)' }}
                   onClick={(e) => e.stopPropagation()}
                 >
                   <h3 className="text-xl font-bold text-[#FFFFFF] mb-1">Add devices</h3>
@@ -161,7 +162,8 @@ export default function DevicesPage() {
                           setAddLoading(false)
                         }
                       }}
-                      className="flex-1 py-2.5 px-4 rounded-lg bg-[#078DEE] text-white font-semibold hover:bg-[#68CDF9] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      className="flex-1 py-2.5 px-4 rounded-lg text-white font-semibold hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+                      style={{ background: 'var(--fs-gradient-primary)' }}
                     >
                       {addLoading ? 'Adding...' : `Add ${addCount} device(s)`}
                     </button>
@@ -174,7 +176,7 @@ export default function DevicesPage() {
             {deviceToDelete && (
               <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#000000]/60" onClick={() => !deleteLoading && setDeviceToDelete(null)}>
                 <div
-                  className="bg-[#28323D] border border-[#333333] rounded-xl shadow-xl max-w-md w-full p-6"
+                  className="border border-[#333333] rounded-xl shadow-xl max-w-md w-full p-6" style={{ background: 'var(--fs-gradient-card)' }}
                   onClick={(e) => e.stopPropagation()}
                 >
                   <div className="flex items-center gap-3 mb-4">
@@ -217,7 +219,8 @@ export default function DevicesPage() {
                         }
                       }}
                       disabled={deleteLoading}
-                      className="flex-1 py-2.5 px-4 rounded-lg bg-[#FF5630] hover:bg-[#FF5630]/90 text-white font-semibold disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
+                      className="flex-1 py-2.5 px-4 rounded-lg text-white font-semibold disabled:opacity-50 transition-opacity flex items-center justify-center gap-2"
+                      style={{ background: 'var(--fs-gradient-danger)' }}
                     >
                       {deleteLoading ? 'Deleting...' : 'Delete'}
                     </button>
@@ -273,7 +276,7 @@ export default function DevicesPage() {
           {isLoading && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
               {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className="bg-[#28323D] border border-[#333333] rounded-xl p-6 animate-pulse">
+                <div key={i} className="rounded-xl border border-[#333333] p-6 animate-pulse" style={{ background: 'var(--fs-gradient-card)' }}>
                   <div className="flex justify-between mb-4">
                     <div className="h-5 bg-[#333333] rounded w-1/3" />
                     <div className="h-8 w-8 bg-[#333333] rounded" />
@@ -290,7 +293,7 @@ export default function DevicesPage() {
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                 {paginatedDevices.map((device) => (
-                  <div key={device.id} className="bg-[#28323D] border border-[#333333] rounded-xl p-6 hover:border-[#637381] transition-colors group">
+                  <div key={device.id} className="border border-[#333333] rounded-xl p-6 hover:border-[#637381] transition-all shadow-lg group" style={{ background: 'var(--fs-gradient-card)' }}>
                     {/* Header: tên + model + menu */}
                     <div className="flex items-start justify-between gap-3 mb-4">
                       <div className="min-w-0 flex-1">
@@ -332,7 +335,7 @@ export default function DevicesPage() {
 
                     <Link
                       href={`/devices/${device.id}`}
-                      className="block w-full py-2.5 px-4 bg-[#1C252E] hover:bg-[#078DEE] border border-[#333333] hover:border-[#078DEE] text-[#68CDF9] hover:text-white rounded-lg font-semibold text-sm transition-colors text-center"
+                      className="block w-full py-2.5 px-4 bg-gradient-to-br from-[#1C252E] to-[#252d38] hover:from-[#078DEE] hover:to-[#00B8D9] border border-[#333333] hover:border-[#078DEE] text-[#68CDF9] hover:text-white rounded-lg font-semibold text-sm transition-all text-center hover:shadow-lg hover:shadow-[#078DEE]/20"
                     >
                       View details →
                     </Link>
@@ -342,7 +345,7 @@ export default function DevicesPage() {
             </>
           ) : !isLoading ? (
             /* List View */
-            <div className="bg-[#28323D] border border-[#333333] rounded-xl overflow-hidden mb-8">
+            <div className="border border-[#333333] rounded-xl overflow-hidden mb-8 shadow-lg" style={{ background: 'var(--fs-gradient-card)' }}>
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>

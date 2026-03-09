@@ -5,7 +5,7 @@ import { Globe, Settings, Moon, User } from 'lucide-react'
 
 export function TopBar() {
   return (
-    <header className="sticky top-0 z-40 flex h-14 items-center justify-end gap-1 px-6 border-b border-[#28323D] bg-[#141A21]/90 backdrop-blur-sm">
+    <header className="sticky top-0 z-40 flex h-14 items-center justify-end gap-1 px-6 border-b border-[#28323D] backdrop-blur-sm" style={{ background: 'linear-gradient(90deg, transparent 0%, #141A21 20%, #1a2332 100%)' }}>
       <div className="flex items-center gap-1">
         <button
           type="button"
@@ -30,7 +30,8 @@ export function TopBar() {
         </button>
         <button
           type="button"
-          className="w-9 h-9 rounded-full bg-[#078DEE] flex items-center justify-center text-[#FFFFFF] font-semibold text-sm hover:ring-2 hover:ring-[#68CDF9] transition-all"
+          className="w-9 h-9 rounded-full flex items-center justify-center text-[#FFFFFF] font-semibold text-sm hover:ring-2 hover:ring-[#68CDF9] transition-all shadow-md"
+          style={{ background: 'var(--fs-gradient-primary)' }}
           title="Account"
         >
           <User size={18} />
