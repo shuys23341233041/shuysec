@@ -66,7 +66,7 @@ export default function DevicesPage() {
     <div className="min-h-screen bg-[#141A21]">
       <Sidebar />
 
-      <main className="overflow-auto min-h-screen transition-[margin] duration-300 ease-in-out" style={{ marginLeft: 'var(--sidebar-width)' }} style={{ background: 'var(--fs-gradient-content)' }}>
+      <main className="overflow-auto min-h-screen transition-[margin] duration-300 ease-in-out" style={{ marginLeft: 'var(--sidebar-width)', background: 'var(--fs-gradient-content)' }}>
         <div className="p-8 max-w-7xl mx-auto">
           {/* Header */}
           <div className="mb-8">
