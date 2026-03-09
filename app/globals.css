@@ -3,8 +3,9 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* FarmSync palette (Devices UI) */
+/* FarmSync palette + design tokens (theo HTML FarmSync) */
 :root {
+  --shape-borderRadius: 8px;
   --fs-bg-main: #141A21;
   --fs-bg-content: #1C252E;
   --fs-card: #28323D;
@@ -14,15 +15,35 @@
   --fs-placeholder: #808080;
   --fs-primary: #078DEE;
   --fs-primary-light: #68CDF9;
+  --fs-primary-dark: #0351AB;
   --fs-cyan: #00B8D9;
   --fs-success: #22C55E;
   --fs-warning: #FFAB00;
   --fs-danger: #FF5630;
+  --fs-secondary: #8E33FF;
   --fs-link: #0000EE;
   --fs-black: #000000;
   --fs-dark: #1E1E1E;
   --fs-gray: #333333;
-  --fs-border: rgba(255, 255, 255, 0.08);
+  --fs-grey-700: #454F5B;
+  --fs-border: rgba(145, 158, 171, 0.2);
+  /* FarmSync custom shadows */
+  --customShadows-primary: 0 8px 16px 0 rgba(7, 141, 238, 0.24);
+  --customShadows-success: 0 8px 16px 0 rgba(34, 197, 94, 0.24);
+  --customShadows-warning: 0 8px 16px 0 rgba(255, 171, 0, 0.24);
+  --customShadows-error: 0 8px 16px 0 rgba(255, 86, 48, 0.24);
+  --customShadows-card: 0 0 2px 0 rgba(0, 0, 0, 0.2), 0 12px 24px -4px rgba(0, 0, 0, 0.12);
+  --customShadows-dropdown: 0 0 2px 0 rgba(0, 0, 0, 0.24), -20px 20px 40px -4px rgba(0, 0, 0, 0.24);
+  /* Transitions (FarmSync) */
+  --transitions-easing-easeInOut: cubic-bezier(0.4, 0, 0.2, 1);
+  --transitions-easing-easeOut: cubic-bezier(0, 0, 0.2, 1);
+  --transitions-easing-easeIn: cubic-bezier(0.4, 0, 1, 1);
+  --transitions-duration-short: 250ms;
+  --transitions-duration-standard: 300ms;
+  /* zIndex FarmSync */
+  --zIndex-drawer: 1200;
+  --zIndex-modal: 1300;
+  --zIndex-tooltip: 1500;
   /* Gradients (FarmSync-style) */
   --fs-gradient-sidebar: linear-gradient(180deg, #141A21 0%, #1a2332 100%);
   --fs-gradient-content: linear-gradient(180deg, #1C252E 0%, #161d28 100%);
@@ -33,6 +54,7 @@
   --fs-gradient-success: linear-gradient(135deg, #22C55E 0%, #16a34a 100%);
   --fs-gradient-danger: linear-gradient(135deg, #FF5630 0%, #de350b 100%);
   --fs-gradient-warning: linear-gradient(135deg, #FFAB00 0%, #ff8f00 100%);
+  --sidebar-width: 14rem; /* 224px, sidebar expanded */
 }
 
 :root {
@@ -153,29 +175,30 @@
   }
   body {
     @apply bg-background text-foreground;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
-  
-  /* Scrollbar styling */
+  /* FarmSync: border radius mặc định cho card/button */
+  [data-fs-card] {
+    border-radius: var(--shape-borderRadius);
+  }
+  /* Scrollbar styling (FarmSync grey) */
   ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
   }
-  
   ::-webkit-scrollbar-track {
-    background: hsl(var(--background));
+    background: var(--fs-bg-main);
   }
-  
   ::-webkit-scrollbar-thumb {
-    background: hsl(217 33% 22%);
+    background: var(--fs-grey-700);
     border-radius: 4px;
-    transition: background 0.2s;
+    transition: background var(--transitions-duration-short) var(--transitions-easing-easeInOut);
   }
-  
   ::-webkit-scrollbar-thumb:hover {
-    background: #078DEE;
+    background: var(--fs-primary);
   }
-  
   ::-webkit-scrollbar-corner {
-    background: hsl(var(--background));
+    background: var(--fs-bg-main);
   }
 }

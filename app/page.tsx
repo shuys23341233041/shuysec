@@ -39,7 +39,7 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-[#141A21]">
       <Sidebar />
-      <main className="ml-56 min-h-screen flex flex-col" style={{ background: 'var(--fs-gradient-content)' }}>
+      <main className="min-h-screen flex flex-col transition-[margin] duration-300 ease-in-out" style={{ marginLeft: 'var(--sidebar-width)' }} style={{ background: 'var(--fs-gradient-content)' }}>
         <TopBar />
         <div className="flex-1 p-6 max-w-7xl mx-auto w-full">
           <div className="mb-6">

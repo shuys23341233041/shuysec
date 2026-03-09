@@ -9,45 +9,88 @@ import {
   HardDrive,
   LogOut,
   Users,
+  PanelLeftClose,
+  PanelLeft,
 } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
+
+const SIDEBAR_STORAGE_KEY = 'sHuysSec-sidebar-collapsed'
+const SIDEBAR_WIDTH_EXPANDED = '14rem'
+const SIDEBAR_WIDTH_COLLAPSED = '4.5rem' // 72px
 
 const SidebarLink = ({
   icon: Icon,
   label,
   href,
-}: { icon: React.ComponentType<{ size?: number; className?: string }>; label: string; href: string }) => {
+  collapsed,
+}: {
+  icon: React.ComponentType<{ size?: number; className?: string }>
+  label: string
+  href: string
+  collapsed: boolean
+}) => {
   const pathname = usePathname()
   const isActive = pathname === href
 
   return (
     <Link
       href={href}
-      className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+      title={collapsed ? label : undefined}
+      className={`flex items-center rounded-lg text-sm font-medium transition-all duration-200 ${
+        collapsed ? 'justify-center px-0 py-2.5' : 'gap-3 px-3 py-2.5'
+      } ${
         isActive
           ? 'text-white shadow-md'
           : 'text-[#919EAB] hover:text-white hover:bg-[#28323D]'
       }`}
       style={isActive ? { background: 'var(--fs-gradient-primary)' } : undefined}
     >
-      <Icon size={20} className="shrink-0" />
-      <span>{label}</span>
+      <Icon size={22} className="shrink-0" />
+      {!collapsed && <span className="truncate">{label}</span>}
     </Link>
   )
 }
 
-const SectionLabel = ({ children }: { children: React.ReactNode }) => (
-  <p className="px-3 mt-5 mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-[#637381]">
-    {children}
-  </p>
-)
+const SectionLabel = ({ children, collapsed }: { children: React.ReactNode; collapsed: boolean }) => {
+  if (collapsed) return null
+  return (
+    <p className="px-3 mt-5 mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-[#637381]">
+      {children}
+    </p>
+  )
+}
 
 export function Sidebar() {
   const router = useRouter()
   const [loggingOut, setLoggingOut] = useState(false)
   const [isAdmin, setIsAdmin] = useState(false)
   const [dbRequired, setDbRequired] = useState<boolean | null>(null)
+  const [collapsed, setCollapsed] = useState(false)
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(SIDEBAR_STORAGE_KEY)
+      setCollapsed(stored === 'true')
+    } catch {
+      setCollapsed(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    const width = collapsed ? SIDEBAR_WIDTH_COLLAPSED : SIDEBAR_WIDTH_EXPANDED
+    document.documentElement.style.setProperty('--sidebar-width', width)
+  }, [collapsed])
+
+  const toggleSidebar = () => {
+    setCollapsed((prev) => {
+      const next = !prev
+      try {
+        localStorage.setItem(SIDEBAR_STORAGE_KEY, String(next))
+      } catch {}
+      return next
+    })
+  }
 
   useEffect(() => {
     fetch('/api/auth/session')
@@ -91,61 +134,87 @@ export function Sidebar() {
   }
 
   return (
-    <aside className="fixed left-0 top-0 w-56 h-screen z-50 flex flex-col border-r border-[#28323D]" style={{ background: 'var(--fs-gradient-sidebar)' }}>
+    <aside
+      className="fixed left-0 top-0 h-screen z-[var(--zIndex-drawer)] flex flex-col border-r border-[#28323D] transition-[width] duration-300 overflow-hidden backdrop-blur-xl"
+      style={{
+        width: collapsed ? SIDEBAR_WIDTH_COLLAPSED : SIDEBAR_WIDTH_EXPANDED,
+        background: 'var(--fs-gradient-sidebar)',
+        transitionTimingFunction: 'var(--transitions-easing-easeInOut)',
+        boxShadow: 'var(--customShadows-card)',
+      }}
+    >
       {/* Logo */}
-      <div className="p-4 border-b border-[#28323D]">
-        <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-lg flex items-center justify-center shadow-lg" style={{ background: 'var(--fs-gradient-primary)' }}>
+      <div className="flex shrink-0 items-center border-b border-[#28323D] p-3 min-h-[4rem]">
+        <div className={`flex items-center gap-2.5 ${collapsed ? 'justify-center w-full' : ''}`}>
+          <div
+            className="w-9 h-9 rounded-lg flex items-center justify-center shadow-lg shrink-0"
+            style={{ background: 'var(--fs-gradient-primary)' }}
+          >
             <span className="text-white text-sm font-bold">sH</span>
           </div>
-          <span className="text-[#FFFFFF] font-semibold tracking-tight">sHuysSec</span>
+          {!collapsed && (
+            <span className="text-[#FFFFFF] font-semibold tracking-tight truncate">sHuysSec</span>
+          )}
         </div>
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 overflow-y-auto py-3 px-2">
-        <SectionLabel>Overview</SectionLabel>
+      <nav className="flex-1 overflow-y-auto overflow-x-hidden py-3 px-2">
+        <SectionLabel collapsed={collapsed}>Overview</SectionLabel>
         <div className="space-y-0.5">
-          <SidebarLink icon={LayoutDashboard} label="Dashboard" href="/" />
-          {/* <SidebarLink icon={CreditCard} label="Buy License" href="/buy-license" /> */}
+          <SidebarLink icon={LayoutDashboard} label="Dashboard" href="/" collapsed={collapsed} />
         </div>
 
-        <SectionLabel>Management</SectionLabel>
+        <SectionLabel collapsed={collapsed}>Management</SectionLabel>
         <div className="space-y-0.5">
-          <SidebarLink icon={Database} label="Devices" href="/devices" />
-          <SidebarLink icon={BarChart3} label="Mass Configure" href="/mass-configure" />
+          <SidebarLink icon={Database} label="Devices" href="/devices" collapsed={collapsed} />
+          <SidebarLink icon={BarChart3} label="Mass Configure" href="/mass-configure" collapsed={collapsed} />
         </div>
 
-        <SectionLabel>Accounts</SectionLabel>
+        <SectionLabel collapsed={collapsed}>Accounts</SectionLabel>
         <div className="space-y-0.5">
-          <SidebarLink icon={Copy} label="Account Manager" href="/unassigned" />
+          <SidebarLink icon={Copy} label="Account Manager" href="/unassigned" collapsed={collapsed} />
         </div>
 
-        <SectionLabel>Storage</SectionLabel>
+        <SectionLabel collapsed={collapsed}>Storage</SectionLabel>
         <div className="space-y-0.5">
-          <SidebarLink icon={HardDrive} label="Backups" href="/backups" />
+          <SidebarLink icon={HardDrive} label="Backups" href="/backups" collapsed={collapsed} />
         </div>
 
         {isAdmin && (
           <>
-            <SectionLabel>Admin</SectionLabel>
+            <SectionLabel collapsed={collapsed}>Admin</SectionLabel>
             <div className="space-y-0.5">
-              <SidebarLink icon={Users} label="User management" href="/admin/users" />
+              <SidebarLink icon={Users} label="User management" href="/admin/users" collapsed={collapsed} />
             </div>
           </>
         )}
       </nav>
 
-      {/* Logout */}
-      <div className="p-3 border-t border-[#28323D]">
+      {/* Toggle + Logout */}
+      <div className="shrink-0 p-2 border-t border-[#28323D] space-y-0.5">
+        <button
+          type="button"
+          onClick={toggleSidebar}
+          title={collapsed ? 'Mở rộng sidebar' : 'Thu gọn sidebar'}
+          className={`w-full flex items-center rounded-lg text-[#919EAB] hover:text-white hover:bg-[#28323D] transition-colors ${
+            collapsed ? 'justify-center px-0 py-2.5' : 'gap-3 px-3 py-2.5'
+          }`}
+        >
+          {collapsed ? <PanelLeft size={22} /> : <PanelLeftClose size={20} />}
+          {!collapsed && <span className="text-sm font-medium">Thu gọn</span>}
+        </button>
         <button
           type="button"
           onClick={handleLogout}
           disabled={loggingOut}
-          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-[#919EAB] hover:text-[#FF5630] hover:bg-[#FF5630]/10 transition-colors disabled:opacity-50"
+          title={collapsed ? 'Log out' : undefined}
+          className={`w-full flex items-center rounded-lg text-sm font-medium text-[#919EAB] hover:text-[#FF5630] hover:bg-[#FF5630]/10 transition-colors disabled:opacity-50 ${
+            collapsed ? 'justify-center px-0 py-2.5' : 'gap-3 px-3 py-2.5'
+          }`}
         >
-          <LogOut size={18} className="shrink-0" />
-          <span>{loggingOut ? 'Logging out...' : 'Log out'}</span>
+          <LogOut size={collapsed ? 22 : 18} className="shrink-0" />
+          {!collapsed && <span>{loggingOut ? 'Logging out...' : 'Log out'}</span>}
         </button>
       </div>
     </aside>

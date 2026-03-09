@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   title: 'sHuysSec - Management Dashboard',
   description: 'Device and account management dashboard',
   generator: 'v0.app',
-  themeColor: '#0a0e27',
+  themeColor: '#078DEE',
   icons: {
     icon: [
       {

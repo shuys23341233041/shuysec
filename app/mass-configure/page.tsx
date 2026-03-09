@@ -133,7 +133,7 @@ export default function MassConfigurePage() {
     <div className="min-h-screen bg-[#141A21]">
       <Sidebar />
 
-      <main className="ml-56 overflow-auto min-h-screen bg-[#1C252E]">
+      <main className="overflow-auto min-h-screen bg-[#1C252E] transition-[margin] duration-300" style={{ marginLeft: 'var(--sidebar-width)' }}>
         <div className="p-8 max-w-7xl mx-auto">
           {/* Header */}
           <div className="mb-8 flex items-start justify-between">

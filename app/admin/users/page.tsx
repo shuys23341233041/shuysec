@@ -77,7 +77,7 @@ export default function AdminUsersPage() {
     return (
       <div className="min-h-screen bg-[#141A21]">
         <Sidebar />
-        <main className="ml-56 flex items-center justify-center min-h-screen bg-[#1C252E]">
+        <main className="flex items-center justify-center min-h-screen bg-[#1C252E] transition-[margin] duration-300" style={{ marginLeft: 'var(--sidebar-width)' }}>
           <p className="text-red-400">Access denied. Admin only.</p>
         </main>
       </div>
@@ -87,7 +87,7 @@ export default function AdminUsersPage() {
   return (
     <div className="min-h-screen bg-[#141A21]">
       <Sidebar />
-      <main className="ml-56 overflow-auto min-h-screen bg-[#1C252E]">
+      <main className="overflow-auto min-h-screen bg-[#1C252E] transition-[margin] duration-300" style={{ marginLeft: 'var(--sidebar-width)' }}>
         <div className="p-8 max-w-5xl mx-auto">
           <div className="mb-8">
             <h1 className="text-4xl font-bold text-white mb-2">User management</h1>
