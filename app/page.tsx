@@ -2,13 +2,14 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import { Sidebar } from '@/components/sidebar'
+import { TopBar } from '@/components/top-bar'
 import { WelcomeHeader } from '@/components/welcome-header'
 import { StatCard } from '@/components/stat-card'
 import { ActivityChart } from '@/components/activity-chart'
 import { RunningGames } from '@/components/running-games'
 import { QuickActions } from '@/components/quick-actions'
 import { Announcements } from '@/components/announcements'
-import { Database, Users, CheckCircle, TrendingUp, RefreshCw } from 'lucide-react'
+import { Database, Users, CheckCircle, TrendingUp } from 'lucide-react'
 import { safeJson } from '@/lib/safe-fetch'
 
 const emptyStats = {
@@ -36,57 +37,48 @@ export default function DashboardPage() {
   }, [loadStats])
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950">
+    <div className="min-h-screen bg-[#0d1117]">
       <Sidebar />
-      
-      <main className="ml-56 overflow-auto min-h-screen">
-        <div className="p-8 max-w-7xl mx-auto">
-          <div className="flex items-center justify-between mb-6">
-            <WelcomeHeader />
-            <button
-              type="button"
-              onClick={loadStats}
-              disabled={isLoading}
-              className="p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-gray-400 hover:text-cyan-400 hover:border-cyan-500/50 transition-all disabled:opacity-50"
-              title="Refresh stats"
-            >
-              <RefreshCw size={20} className={isLoading ? 'animate-spin' : ''} />
-            </button>
+      <main className="ml-56 min-h-screen flex flex-col">
+        <TopBar />
+        <div className="flex-1 p-6 max-w-7xl mx-auto w-full">
+          <div className="mb-6">
+            <WelcomeHeader onRefresh={loadStats} isLoading={isLoading} />
           </div>
 
-          {/* Stats Grid */}
+          {/* Stats */}
           <div className="grid grid-cols-4 gap-4 mb-6">
-            <StatCard 
+            <StatCard
               icon={<Database size={24} />}
               value={String(stats.totalDevices ?? '—')}
               label="Total Devices"
-              bgColor="bg-blue-600"
-              iconColor="text-blue-400"
+              iconBg="bg-blue-600"
+              iconColor="text-white"
             />
-            <StatCard 
+            <StatCard
               icon={<Users size={24} />}
               value={String(stats.totalAccounts ?? '—')}
               label="Total Accounts"
-              bgColor="bg-cyan-600"
-              iconColor="text-cyan-400"
+              iconBg="bg-emerald-600"
+              iconColor="text-white"
             />
-            <StatCard 
+            <StatCard
               icon={<CheckCircle size={24} />}
               value={String(stats.runningAccounts ?? '—')}
               label="Running Accounts"
-              bgColor="bg-green-600"
-              iconColor="text-green-400"
+              iconBg="bg-teal-600"
+              iconColor="text-white"
             />
-            <StatCard 
+            <StatCard
               icon={<TrendingUp size={24} />}
               value={stats.uptimePercent != null ? `${stats.uptimePercent}%` : '—'}
               label="Uptime"
-              bgColor="bg-orange-600"
-              iconColor="text-orange-400"
+              iconBg="bg-amber-600"
+              iconColor="text-white"
             />
           </div>
 
-          {/* Charts Grid */}
+          {/* Charts */}
           <div className="grid grid-cols-3 gap-4 mb-6">
             <div className="col-span-2">
               <ActivityChart />
@@ -94,30 +86,24 @@ export default function DashboardPage() {
             <RunningGames />
           </div>
 
-          {/* Autocharge Activity */}
-          <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/50 rounded-xl p-6 mb-6 hover:border-slate-600/50 transition-all duration-300 hover:shadow-lg hover:shadow-slate-900/50">
-            <div className="flex items-center gap-2 mb-6">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/20">
-                <Database size={18} className="text-white" />
+          {/* Autochange Activity */}
+          <div className="rounded-xl border border-white/5 bg-[#161b22] p-6 mb-6">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white">
+                <Database size={18} />
               </div>
               <div>
-                <h3 className="text-white font-semibold">Autocharge Activity</h3>
+                <h3 className="text-white font-semibold">Autochange Activity</h3>
                 <p className="text-xs text-gray-400">Exports by type over time</p>
               </div>
             </div>
-
-            <div className="flex flex-col items-center justify-center py-24 text-center">
-              <div className="w-16 h-16 bg-slate-700/50 rounded-full flex items-center justify-center mb-3 ring-1 ring-slate-600/30">
-                <Database size={32} className="text-gray-600" />
-              </div>
+            <div className="flex flex-col items-center justify-center py-20 text-center rounded-lg bg-white/[0.02] border border-white/5">
+              <Database size={36} className="text-gray-600 mb-2" />
               <p className="text-sm text-gray-400">No export data</p>
             </div>
           </div>
 
-          {/* Quick Actions */}
           <QuickActions />
-
-          {/* Announcements */}
           <Announcements />
         </div>
       </main>

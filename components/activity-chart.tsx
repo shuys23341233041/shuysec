@@ -21,24 +21,24 @@ const data = [
 
 export function ActivityChart() {
   return (
-    <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/50 rounded-xl p-6 hover:border-slate-600/50 transition-all duration-300 hover:shadow-xl hover:shadow-slate-900/60 group cursor-default">
+    <div className="rounded-xl border border-white/5 bg-[#161b22] p-6">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-gradient-to-br from-cyan-600 to-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-cyan-500/20 transition-all duration-300 group-hover:scale-110">
-            <TrendingUp size={18} className="text-white transition-transform duration-300 group-hover:rotate-12" />
+          <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white">
+            <TrendingUp size={18} />
           </div>
           <div>
-            <h3 className="text-white font-semibold transition-colors duration-300 group-hover:text-cyan-300">Account Activity</h3>
-            <p className="text-xs text-gray-400 transition-colors duration-300 group-hover:text-gray-300">Online vs Total accounts over time</p>
+            <h3 className="text-white font-semibold">Account Activity</h3>
+            <p className="text-xs text-gray-400">Online vs Total accounts over time</p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1">
-            <div className="w-3 h-3 bg-cyan-500 rounded-full"></div>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5">
+            <div className="w-2.5 h-2.5 bg-blue-500 rounded-full" />
             <span className="text-xs text-gray-400">Online</span>
           </div>
-          <div className="flex items-center gap-1">
-            <div className="w-3 h-3 bg-gray-600 rounded-full"></div>
+          <div className="flex items-center gap-1.5">
+            <div className="w-2.5 h-2.5 bg-gray-500 rounded-full" />
             <span className="text-xs text-gray-400">Total</span>
           </div>
         </div>

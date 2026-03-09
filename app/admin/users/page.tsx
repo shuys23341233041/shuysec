@@ -75,7 +75,7 @@ export default function AdminUsersPage() {
 
   if (forbidden) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950">
+      <div className="min-h-screen bg-[#0d1117]">
         <Sidebar />
         <main className="ml-56 flex items-center justify-center min-h-screen">
           <p className="text-red-400">Access denied. Admin only.</p>
@@ -85,7 +85,7 @@ export default function AdminUsersPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950">
+    <div className="min-h-screen bg-[#0d1117]">
       <Sidebar />
       <main className="ml-56 overflow-auto min-h-screen">
         <div className="p-8 max-w-5xl mx-auto">

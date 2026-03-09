@@ -1,21 +1,46 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { LayoutDashboard, BarChart3, Database, Copy, HardDrive, LogOut, Users } from 'lucide-react'
+import {
+  LayoutDashboard,
+  BarChart3,
+  Database,
+  Copy,
+  HardDrive,
+  LogOut,
+  Users,
+} from 'lucide-react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 
-const SidebarLink = ({ icon: Icon, label, href }: { icon: any, label: string, href: string }) => {
+const SidebarLink = ({
+  icon: Icon,
+  label,
+  href,
+}: { icon: React.ComponentType<{ size?: number; className?: string }>; label: string; href: string }) => {
   const pathname = usePathname()
   const isActive = pathname === href
-  
+
   return (
-    <Link href={href} className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-300 group ${isActive ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-lg shadow-cyan-500/20' : 'text-gray-400 hover:text-gray-100 hover:bg-slate-800/60'}`}>
-      <Icon size={20} className="group-hover:scale-110 transition-transform duration-300" />
-      <span className="text-sm font-medium">{label}</span>
+    <Link
+      href={href}
+      className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+        isActive
+          ? 'bg-blue-600 text-white'
+          : 'text-gray-400 hover:text-white hover:bg-white/5'
+      }`}
+    >
+      <Icon size={20} className="shrink-0" />
+      <span>{label}</span>
     </Link>
   )
 }
+
+const SectionLabel = ({ children }: { children: React.ReactNode }) => (
+  <p className="px-3 mt-5 mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-gray-500">
+    {children}
+  </p>
+)
 
 export function Sidebar() {
   const router = useRouter()
@@ -65,71 +90,63 @@ export function Sidebar() {
   }
 
   return (
-    <div className="fixed left-0 top-0 w-56 bg-gradient-to-b from-slate-900 to-slate-950 border-r border-slate-800 flex flex-col h-screen z-50">
-      {/* Header */}
-      <div className="p-4 border-b border-slate-800 bg-gradient-to-r from-slate-900 to-slate-850">
-        <div className="flex items-center gap-2 mb-8">
-          <div className="w-8 h-8 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-cyan-500/30">
-            <span className="text-white text-xs font-bold">sH</span>
+    <aside className="fixed left-0 top-0 w-56 h-screen z-50 flex flex-col bg-[#0f1419] border-r border-white/5">
+      {/* Logo */}
+      <div className="p-4 border-b border-white/5">
+        <div className="flex items-center gap-2.5">
+          <div className="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center">
+            <span className="text-white text-sm font-bold">sH</span>
           </div>
           <span className="text-white font-semibold tracking-tight">sHuysSec</span>
         </div>
       </div>
 
-      {/* Navigation */}
-      <div className="flex-1 overflow-y-auto px-2 py-4 space-y-1">
-        <div className="px-2 py-1 mb-2">
-          <p className="text-xs font-semibold text-gray-500 uppercase">Main</p>
-        </div>
-        
-        <SidebarLink icon={LayoutDashboard} label="Dashboard" href="/" />
-        {/* <SidebarLink icon={BarChart3} label="Buy License" href="/buy-license" /> */}
-
-        <div className="px-2 py-3 mt-6 mb-2">
-          <p className="text-xs font-semibold text-gray-500 uppercase">Management</p>
+      {/* Nav */}
+      <nav className="flex-1 overflow-y-auto py-3 px-2">
+        <SectionLabel>Overview</SectionLabel>
+        <div className="space-y-0.5">
+          <SidebarLink icon={LayoutDashboard} label="Dashboard" href="/" />
+          {/* <SidebarLink icon={CreditCard} label="Buy License" href="/buy-license" /> */}
         </div>
 
-        <SidebarLink icon={Database} label="Devices" href="/devices" />
-        {/* <SidebarLink icon={Zap} label="Scripts" href="/scripts" /> */}
-        {/* <SidebarLink icon={Settings} label="Configs" href="/configs" /> */}
-        <SidebarLink icon={BarChart3} label="Mass Configure" href="/mass-configure" />
-
-        <div className="px-2 py-3 mt-6 mb-2">
-          <p className="text-xs font-semibold text-gray-500 uppercase">Accounts</p>
+        <SectionLabel>Management</SectionLabel>
+        <div className="space-y-0.5">
+          <SidebarLink icon={Database} label="Devices" href="/devices" />
+          <SidebarLink icon={BarChart3} label="Mass Configure" href="/mass-configure" />
         </div>
 
-        {/* <SidebarLink icon={LayoutDashboard} label="Search Accounts" href="/search-accounts" /> */}
-        <SidebarLink icon={Copy} label="Unassigned" href="/unassigned" />
-        {/* <SidebarLink icon={Copy} label="Replace Cookie" href="/replace-cookie" /> */}
-
-        <div className="px-2 py-3 mt-6 mb-2">
-          <p className="text-xs font-semibold text-gray-500 uppercase">Storage</p>
+        <SectionLabel>Accounts</SectionLabel>
+        <div className="space-y-0.5">
+          <SidebarLink icon={Copy} label="Account Manager" href="/unassigned" />
         </div>
 
-        <SidebarLink icon={HardDrive} label="Backups" href="/backups" />
+        <SectionLabel>Storage</SectionLabel>
+        <div className="space-y-0.5">
+          <SidebarLink icon={HardDrive} label="Backups" href="/backups" />
+        </div>
 
         {isAdmin && (
           <>
-            <div className="px-2 py-3 mt-6 mb-2">
-              <p className="text-xs font-semibold text-gray-500 uppercase">Admin</p>
+            <SectionLabel>Admin</SectionLabel>
+            <div className="space-y-0.5">
+              <SidebarLink icon={Users} label="User management" href="/admin/users" />
             </div>
-            <SidebarLink icon={Users} label="User management" href="/admin/users" />
           </>
         )}
-      </div>
+      </nav>
 
-      {/* Footer: Logout */}
-      <div className="p-4 border-t border-slate-800">
+      {/* Logout */}
+      <div className="p-3 border-t border-white/5">
         <button
           type="button"
           onClick={handleLogout}
           disabled={loggingOut}
-          className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-gray-400 hover:text-red-300 hover:bg-red-500/10 transition-colors disabled:opacity-50"
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-red-300 hover:bg-red-500/10 transition-colors disabled:opacity-50"
         >
-          <LogOut size={18} />
-          <span className="text-sm font-medium">{loggingOut ? 'Logging out...' : 'Log out'}</span>
+          <LogOut size={18} className="shrink-0" />
+          <span>{loggingOut ? 'Logging out...' : 'Log out'}</span>
         </button>
       </div>
-    </div>
+    </aside>
   )
 }

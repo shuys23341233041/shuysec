@@ -1,25 +1,32 @@
-import { Database, Zap, Settings, Key } from 'lucide-react'
+'use client'
+
+import Link from 'next/link'
+import { Database, BarChart3, Copy, HardDrive } from 'lucide-react'
 
 const actions = [
-  { icon: Database, label: 'Devices', description: 'Manage devices', bgColor: 'bg-gradient-to-br from-blue-600 to-blue-700', shadow: 'shadow-blue-500/20' },
-  { icon: Zap, label: 'Scripts', description: 'Browse scripts', bgColor: 'bg-gradient-to-br from-cyan-600 to-blue-600', shadow: 'shadow-cyan-500/20' },
-  { icon: Settings, label: 'Configs', description: 'Configurations', bgColor: 'bg-gradient-to-br from-orange-600 to-amber-600', shadow: 'shadow-orange-500/20' },
-  { icon: Key, label: 'Licenses', description: 'View licenses', bgColor: 'bg-gradient-to-br from-green-600 to-emerald-600', shadow: 'shadow-green-500/20' },
+  { icon: Database, label: 'Devices', description: 'Manage devices', href: '/devices', color: 'bg-blue-600' },
+  { icon: BarChart3, label: 'Mass Configure', description: 'Distribute accounts', href: '/mass-configure', color: 'bg-emerald-600' },
+  { icon: Copy, label: 'Account Manager', description: 'Unassigned accounts', href: '/unassigned', color: 'bg-amber-600' },
+  { icon: HardDrive, label: 'Backups', description: 'Restore backups', href: '/backups', color: 'bg-green-600' },
 ]
 
 export function QuickActions() {
   return (
     <div className="mb-6">
-      <h2 className="text-white font-semibold mb-4">Quick Actions</h2>
+      <h2 className="text-lg font-semibold text-white mb-4">Quick Actions</h2>
       <div className="grid grid-cols-4 gap-4">
         {actions.map((action, i) => (
-          <button key={i} className="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/50 rounded-xl p-4 hover:border-slate-600/50 transition-all duration-300 hover:shadow-xl hover:shadow-slate-900/60 hover:-translate-y-1 text-left group">
-            <div className={`w-10 h-10 ${action.bgColor} rounded-lg flex items-center justify-center mb-3 shadow-lg ${action.shadow} group-hover:scale-125 transition-all duration-300`}>
-              <action.icon size={20} className="text-white transition-transform duration-300 group-hover:rotate-12" />
+          <Link
+            key={i}
+            href={action.href}
+            className="rounded-xl border border-white/5 bg-[#161b22] p-4 hover:border-white/10 hover:bg-[#1c2128] transition-all text-left group"
+          >
+            <div className={`w-10 h-10 ${action.color} rounded-lg flex items-center justify-center mb-3 text-white group-hover:scale-105 transition-transform`}>
+              <action.icon size={20} />
             </div>
-            <h4 className="text-white font-semibold text-sm transition-colors duration-300 group-hover:text-cyan-300">{action.label}</h4>
-            <p className="text-xs text-gray-400 transition-colors duration-300 group-hover:text-gray-300">{action.description}</p>
-          </button>
+            <h4 className="text-white font-semibold text-sm">{action.label}</h4>
+            <p className="text-xs text-gray-400 mt-0.5">{action.description}</p>
+          </Link>
         ))}
       </div>
     </div>

@@ -1,21 +1,60 @@
-import { Settings, Eye, Grid2X2, Zap } from 'lucide-react'
+'use client'
 
-export function WelcomeHeader() {
+import { RefreshCw } from 'lucide-react'
+
+const formatWelcomeDate = () => {
+  const d = new Date()
+  const options: Intl.DateTimeFormatOptions = {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  }
+  return d.toLocaleDateString('en-US', options)
+}
+
+interface WelcomeHeaderProps {
+  onRefresh?: () => void
+  isLoading?: boolean
+}
+
+export function WelcomeHeader({ onRefresh, isLoading }: WelcomeHeaderProps) {
   return (
-    <div className="bg-gradient-to-r from-cyan-600 via-blue-600 to-blue-700 rounded-xl p-6 mb-6 shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30 transition-all duration-200">
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-white mb-2">Welcome to sHuysSec</h1>
-          <p className="text-blue-100 text-sm">Wednesday, March 4, 2026</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <button className="bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 backdrop-blur-sm border border-white/10 hover:border-white/20">24H</button>
-          <button className="bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 backdrop-blur-sm border border-white/10 hover:border-white/20">7D</button>
-          <button className="bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 backdrop-blur-sm border border-white/10 hover:border-white/20">30D</button>
-          <button className="bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 flex items-center gap-1 backdrop-blur-sm border border-white/10 hover:border-white/20">
-            <Zap size={14} />
+    <div className="flex items-center justify-between rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-5 shadow-lg">
+      <div>
+        <h1 className="text-2xl font-bold text-white">Welcome to sHuysSec</h1>
+        <p className="text-blue-100/90 text-sm mt-0.5">{formatWelcomeDate()}</p>
+      </div>
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          className="bg-white/15 hover:bg-white/25 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-colors border border-white/10"
+        >
+          24H
+        </button>
+        <button
+          type="button"
+          className="bg-white/15 hover:bg-white/25 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-colors border border-white/10"
+        >
+          7D
+        </button>
+        <button
+          type="button"
+          className="bg-white/15 hover:bg-white/25 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-colors border border-white/10"
+        >
+          30D
+        </button>
+        {onRefresh && (
+          <button
+            type="button"
+            onClick={onRefresh}
+            disabled={isLoading}
+            className="p-2 rounded-lg bg-white/15 hover:bg-white/25 text-white border border-white/10 disabled:opacity-50 transition-colors"
+            title="Refresh"
+          >
+            <RefreshCw size={18} className={isLoading ? 'animate-spin' : ''} />
           </button>
-        </div>
+        )}
       </div>
     </div>
   )

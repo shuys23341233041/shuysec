@@ -6,12 +6,12 @@ export function Announcements() {
   return (
     <div className="grid grid-cols-2 gap-4">
       {/* Announcements */}
-      <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/50 rounded-xl p-6 hover:border-slate-600/50 transition-all duration-300 hover:shadow-xl hover:shadow-slate-900/60 group">
+      <div className="rounded-xl border border-white/5 bg-[#161b22] p-6">
         <div className="flex items-center gap-2 mb-4">
-          <div className="w-8 h-8 bg-gradient-to-br from-red-600 to-red-700 rounded-lg flex items-center justify-center shadow-lg shadow-red-500/20 transition-all duration-300 group-hover:scale-110">
-            <AlertCircle size={18} className="text-white transition-transform duration-300 group-hover:rotate-12" />
+          <div className="w-8 h-8 rounded-lg bg-red-600 flex items-center justify-center text-white">
+            <AlertCircle size={18} />
           </div>
-          <h3 className="text-white font-semibold transition-colors duration-300 group-hover:text-red-300">Announcements</h3>
+          <h3 className="text-white font-semibold">Announcements</h3>
         </div>
 
         <div className="space-y-4 max-h-96 overflow-y-auto">
@@ -44,17 +44,16 @@ export function Announcements() {
       </div>
 
       {/* Recent Updates */}
-      <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/50 rounded-xl p-6 hover:border-slate-600/50 transition-all duration-300 hover:shadow-xl hover:shadow-slate-900/60 group">
+      <div className="rounded-xl border border-white/5 bg-[#161b22] p-6">
         <div className="flex items-center gap-2 mb-4">
-          <div className="w-8 h-8 bg-gradient-to-br from-cyan-600 to-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-cyan-500/20 transition-all duration-300 group-hover:scale-110">
-            <Bell size={18} className="text-white transition-transform duration-300 group-hover:ring-2 group-hover:ring-cyan-500/30" />
+          <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white">
+            <Bell size={18} />
           </div>
-          <h3 className="text-white font-semibold transition-colors duration-300 group-hover:text-cyan-300">Recent Updates</h3>
+          <h3 className="text-white font-semibold">Recent Updates</h3>
         </div>
-
-        <div className="flex flex-col items-center justify-center py-16 text-center">
-          <Clock size={40} className="text-gray-600 mb-3 transition-transform duration-300 group-hover:rotate-12" />
-          <p className="text-sm text-gray-400 transition-colors duration-300 group-hover:text-gray-300">No recent updates</p>
+        <div className="flex flex-col items-center justify-center py-14 text-center rounded-lg bg-white/[0.02] border border-white/5">
+          <Clock size={36} className="text-gray-500 mb-2" />
+          <p className="text-sm text-gray-400">No recent updates</p>
         </div>
       </div>
     </div>

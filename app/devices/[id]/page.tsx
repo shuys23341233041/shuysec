@@ -72,7 +72,7 @@ export default function DeviceDetailPage() {
 
   if (isLoading || device === null) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950">
+      <div className="min-h-screen bg-[#0d1117]">
         <Sidebar />
         <main className="ml-56 overflow-auto min-h-screen flex flex-col items-center justify-center gap-4">
           {isLoading ? (
@@ -108,7 +108,7 @@ export default function DeviceDetailPage() {
   const connectedStatus = connected ? 'Connected' : 'Disconnected'
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950">
+    <div className="min-h-screen bg-[#0d1117]">
       <Sidebar />
       
       <main className="ml-56 overflow-auto min-h-screen">
