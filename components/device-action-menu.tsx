@@ -60,16 +60,16 @@ export function DeviceActionMenu({ deviceId, deviceName, onView, onEdit, onStop,
     <div className="relative" ref={menuRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="p-2 hover:bg-slate-700/50 rounded-lg transition-colors duration-200"
+        className="p-2 hover:bg-[#1C252E] rounded-lg transition-colors"
       >
-        <MoreVertical size={18} className="text-gray-400 hover:text-gray-200" />
+        <MoreVertical size={18} className="text-[#919EAB] hover:text-[#FFFFFF]" />
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-48 bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/50 rounded-lg shadow-xl shadow-slate-900/50 z-50 overflow-hidden">
+        <div className="absolute right-0 top-full mt-2 w-48 bg-[#28323D] border border-[#333333] rounded-lg shadow-xl z-50 overflow-hidden">
           <button
             onClick={handleView}
-            className="w-full flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-slate-700/50 hover:text-cyan-300 transition-all duration-200 border-b border-slate-700/30"
+            className="w-full flex items-center gap-3 px-4 py-3 text-[#919EAB] hover:bg-[#1C252E] hover:text-[#68CDF9] transition-colors border-b border-[#333333]"
           >
             <Eye size={18} />
             <span>View</span>
@@ -77,7 +77,7 @@ export function DeviceActionMenu({ deviceId, deviceName, onView, onEdit, onStop,
 
           <button
             onClick={handleCopyKey}
-            className="w-full flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-slate-700/50 hover:text-cyan-300 transition-all duration-200 border-b border-slate-700/30"
+            className="w-full flex items-center gap-3 px-4 py-3 text-[#919EAB] hover:bg-[#1C252E] hover:text-[#68CDF9] transition-colors border-b border-[#333333]"
           >
             <Copy size={18} />
             <span>Copy Key</span>
@@ -85,7 +85,7 @@ export function DeviceActionMenu({ deviceId, deviceName, onView, onEdit, onStop,
 
           <button
             onClick={handleResetKey}
-            className="w-full flex items-center gap-3 px-4 py-3 text-amber-400 hover:bg-slate-700/50 hover:text-amber-300 transition-all duration-200 border-b border-slate-700/30"
+            className="w-full flex items-center gap-3 px-4 py-3 text-[#FFAB00] hover:bg-[#1C252E] hover:text-[#FFAB00] transition-colors border-b border-[#333333]"
           >
             <Key size={18} />
             <span>Reset Key</span>
@@ -93,7 +93,7 @@ export function DeviceActionMenu({ deviceId, deviceName, onView, onEdit, onStop,
 
           <button
             onClick={handleEdit}
-            className="w-full flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-slate-700/50 hover:text-cyan-300 transition-all duration-200 border-b border-slate-700/30"
+            className="w-full flex items-center gap-3 px-4 py-3 text-[#919EAB] hover:bg-[#1C252E] hover:text-[#68CDF9] transition-colors border-b border-[#333333]"
           >
             <Edit2 size={18} />
             <span>Edit</span>
@@ -101,7 +101,7 @@ export function DeviceActionMenu({ deviceId, deviceName, onView, onEdit, onStop,
 
           <button
             onClick={handleStop}
-            className="w-full flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-slate-700/50 hover:text-cyan-300 transition-all duration-200 border-b border-slate-700/30"
+            className="w-full flex items-center gap-3 px-4 py-3 text-[#919EAB] hover:bg-[#1C252E] hover:text-[#68CDF9] transition-colors border-b border-[#333333]"
           >
             <Power size={18} />
             <span>Stop</span>
@@ -113,7 +113,7 @@ export function DeviceActionMenu({ deviceId, deviceName, onView, onEdit, onStop,
                 onDelete(String(deviceId), deviceName ?? String(deviceId))
                 setIsOpen(false)
               }}
-              className="w-full flex items-center gap-3 px-4 py-3 text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-all duration-200"
+              className="w-full flex items-center gap-3 px-4 py-3 text-[#FF5630] hover:bg-[#FF5630]/10 transition-colors"
             >
               <Trash2 size={18} />
               <span>Delete device</span>

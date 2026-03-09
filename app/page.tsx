@@ -37,9 +37,9 @@ export default function DashboardPage() {
   }, [loadStats])
 
   return (
-    <div className="min-h-screen bg-[#0d1117]">
+    <div className="min-h-screen bg-[#141A21]">
       <Sidebar />
-      <main className="ml-56 min-h-screen flex flex-col">
+      <main className="ml-56 min-h-screen flex flex-col bg-[#1C252E]">
         <TopBar />
         <div className="flex-1 p-6 max-w-7xl mx-auto w-full">
           <div className="mb-6">
@@ -52,28 +52,28 @@ export default function DashboardPage() {
               icon={<Database size={24} />}
               value={String(stats.totalDevices ?? '—')}
               label="Total Devices"
-              iconBg="bg-blue-600"
+              iconBg="bg-[#078DEE]"
               iconColor="text-white"
             />
             <StatCard
               icon={<Users size={24} />}
               value={String(stats.totalAccounts ?? '—')}
               label="Total Accounts"
-              iconBg="bg-emerald-600"
+              iconBg="bg-[#22C55E]"
               iconColor="text-white"
             />
             <StatCard
               icon={<CheckCircle size={24} />}
               value={String(stats.runningAccounts ?? '—')}
               label="Running Accounts"
-              iconBg="bg-teal-600"
+              iconBg="bg-[#00B8D9]"
               iconColor="text-white"
             />
             <StatCard
               icon={<TrendingUp size={24} />}
               value={stats.uptimePercent != null ? `${stats.uptimePercent}%` : '—'}
               label="Uptime"
-              iconBg="bg-amber-600"
+              iconBg="bg-[#FFAB00]"
               iconColor="text-white"
             />
           </div>
@@ -87,19 +87,19 @@ export default function DashboardPage() {
           </div>
 
           {/* Autochange Activity */}
-          <div className="rounded-xl border border-white/5 bg-[#161b22] p-6 mb-6">
+          <div className="rounded-xl border border-[#333333] bg-[#28323D] p-6 mb-6">
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white">
+              <div className="w-8 h-8 rounded-lg bg-[#078DEE] flex items-center justify-center text-white">
                 <Database size={18} />
               </div>
               <div>
-                <h3 className="text-white font-semibold">Autochange Activity</h3>
-                <p className="text-xs text-gray-400">Exports by type over time</p>
+                <h3 className="text-[#FFFFFF] font-semibold">Autochange Activity</h3>
+                <p className="text-xs text-[#919EAB]">Exports by type over time</p>
               </div>
             </div>
-            <div className="flex flex-col items-center justify-center py-20 text-center rounded-lg bg-white/[0.02] border border-white/5">
-              <Database size={36} className="text-gray-600 mb-2" />
-              <p className="text-sm text-gray-400">No export data</p>
+            <div className="flex flex-col items-center justify-center py-20 text-center rounded-lg bg-[#1C252E] border border-[#333333]">
+              <Database size={36} className="text-[#637381] mb-2" />
+              <p className="text-sm text-[#919EAB]">No export data</p>
             </div>
           </div>
 

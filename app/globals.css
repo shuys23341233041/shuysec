@@ -3,8 +3,29 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* FarmSync palette (Devices UI) */
 :root {
-  /* Modern FarmSync Dark Theme */
+  --fs-bg-main: #141A21;
+  --fs-bg-content: #1C252E;
+  --fs-card: #28323D;
+  --fs-text: #FFFFFF;
+  --fs-text-secondary: #919EAB;
+  --fs-text-muted: #637381;
+  --fs-placeholder: #808080;
+  --fs-primary: #078DEE;
+  --fs-primary-light: #68CDF9;
+  --fs-cyan: #00B8D9;
+  --fs-success: #22C55E;
+  --fs-warning: #FFAB00;
+  --fs-danger: #FF5630;
+  --fs-link: #0000EE;
+  --fs-black: #000000;
+  --fs-dark: #1E1E1E;
+  --fs-gray: #333333;
+  --fs-border: rgba(255, 255, 255, 0.08);
+}
+
+:root {
   --background: 216 30% 9%;
   --foreground: 210 40% 96%;
   --card: 217 33% 14%;
@@ -141,7 +162,7 @@
   }
   
   ::-webkit-scrollbar-thumb:hover {
-    background: hsl(198 93% 60% / 0.6);
+    background: #078DEE;
   }
   
   ::-webkit-scrollbar-corner {

@@ -26,8 +26,8 @@ const SidebarLink = ({
       href={href}
       className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
         isActive
-          ? 'bg-blue-600 text-white'
-          : 'text-gray-400 hover:text-white hover:bg-white/5'
+          ? 'bg-[#078DEE] text-white'
+          : 'text-[#919EAB] hover:text-white hover:bg-[#28323D]'
       }`}
     >
       <Icon size={20} className="shrink-0" />
@@ -37,7 +37,7 @@ const SidebarLink = ({
 }
 
 const SectionLabel = ({ children }: { children: React.ReactNode }) => (
-  <p className="px-3 mt-5 mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-gray-500">
+  <p className="px-3 mt-5 mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-[#637381]">
     {children}
   </p>
 )
@@ -90,14 +90,14 @@ export function Sidebar() {
   }
 
   return (
-    <aside className="fixed left-0 top-0 w-56 h-screen z-50 flex flex-col bg-[#0f1419] border-r border-white/5">
+    <aside className="fixed left-0 top-0 w-56 h-screen z-50 flex flex-col bg-[#141A21] border-r border-[#28323D]">
       {/* Logo */}
-      <div className="p-4 border-b border-white/5">
+      <div className="p-4 border-b border-[#28323D]">
         <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center">
+          <div className="w-9 h-9 rounded-lg bg-[#078DEE] flex items-center justify-center">
             <span className="text-white text-sm font-bold">sH</span>
           </div>
-          <span className="text-white font-semibold tracking-tight">sHuysSec</span>
+          <span className="text-[#FFFFFF] font-semibold tracking-tight">sHuysSec</span>
         </div>
       </div>
 
@@ -136,12 +136,12 @@ export function Sidebar() {
       </nav>
 
       {/* Logout */}
-      <div className="p-3 border-t border-white/5">
+      <div className="p-3 border-t border-[#28323D]">
         <button
           type="button"
           onClick={handleLogout}
           disabled={loggingOut}
-          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-red-300 hover:bg-red-500/10 transition-colors disabled:opacity-50"
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-[#919EAB] hover:text-[#FF5630] hover:bg-[#FF5630]/10 transition-colors disabled:opacity-50"
         >
           <LogOut size={18} className="shrink-0" />
           <span>{loggingOut ? 'Logging out...' : 'Log out'}</span>

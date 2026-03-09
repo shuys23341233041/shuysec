@@ -21,42 +21,42 @@ const data = [
 
 export function ActivityChart() {
   return (
-    <div className="rounded-xl border border-white/5 bg-[#161b22] p-6">
+    <div className="rounded-xl border border-[#333333] bg-[#28323D] p-6">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white">
+          <div className="w-8 h-8 rounded-lg bg-[#078DEE] flex items-center justify-center text-white">
             <TrendingUp size={18} />
           </div>
           <div>
-            <h3 className="text-white font-semibold">Account Activity</h3>
-            <p className="text-xs text-gray-400">Online vs Total accounts over time</p>
+            <h3 className="text-[#FFFFFF] font-semibold">Account Activity</h3>
+            <p className="text-xs text-[#919EAB]">Online vs Total accounts over time</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5">
-            <div className="w-2.5 h-2.5 bg-blue-500 rounded-full" />
-            <span className="text-xs text-gray-400">Online</span>
+            <div className="w-2.5 h-2.5 bg-[#078DEE] rounded-full" />
+            <span className="text-xs text-[#919EAB]">Online</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <div className="w-2.5 h-2.5 bg-gray-500 rounded-full" />
-            <span className="text-xs text-gray-400">Total</span>
+            <div className="w-2.5 h-2.5 bg-[#637381] rounded-full" />
+            <span className="text-xs text-[#919EAB]">Total</span>
           </div>
         </div>
       </div>
 
       <ResponsiveContainer width="100%" height={250}>
         <LineChart data={data} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.5} />
-          <XAxis dataKey="time" stroke="#9ca3af" style={{ fontSize: '12px' }} />
-          <YAxis stroke="#9ca3af" style={{ fontSize: '12px' }} />
+          <CartesianGrid strokeDasharray="3 3" stroke="#333333" opacity={0.5} />
+          <XAxis dataKey="time" stroke="#919EAB" style={{ fontSize: '12px' }} />
+          <YAxis stroke="#919EAB" style={{ fontSize: '12px' }} />
           <Tooltip 
-            contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #475569', borderRadius: '8px' }}
-            labelStyle={{ color: '#e5e7eb' }}
+            contentStyle={{ backgroundColor: '#28323D', border: '1px solid #333333', borderRadius: '8px' }}
+            labelStyle={{ color: '#FFFFFF' }}
           />
           <Line 
             type="monotone" 
             dataKey="value" 
-            stroke="#0ea5e9" 
+            stroke="#078DEE" 
             dot={false}
             strokeWidth={3}
           />
